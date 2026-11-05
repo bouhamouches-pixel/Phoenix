@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lore de Phoenix RP</title>
+<meta name="description" content="Phoenix, les cendres de San Andreas. Lore officiel du serveur FiveM Phoenix : la fracture entre Los Santos et Blaine County, l'affaire Mozzini, le Projet Phoenix et un Nord fermé au public en 2026.">
+<meta name="theme-color" content="#1B1512">
+<meta property="og:title" content="Phoenix, les cendres de San Andreas">
+<meta property="og:description" content="Le passé a divisé San Andreas. Le présent porte encore ses cicatrices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Overpass:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Direction : un État coupé en deux. Le récit brûle de 2016 à 2025 et s'arrête devant une barrière : le Nord reste fermé.
+     Un rail de route à gauche suit les années ; un narrateur peut lire le récit en le surlignant. */
+  --suie:#1B1512;
+  --cendre:#271F1B;
+  --braise:#EE5D27;
+  --flamme:#F5B041;
+  --sang:#B0361F;
+  --os:#ECE3D7;
+  --poussiere:#A89A8C;
+  --panneau:#1F5B3D;
+  --trait:rgba(236,227,215,.13);
+  --texte-doux:#D3C6B7;
+
+  --s-actif:#86C08F;
+  --s-danger:#E8594C;
+  --s-vacant:#A89A8C;
+  --s-tension:#F5B041;
+
+  --font-recit:"Newsreader", Georgia, "Times New Roman", serif;
+  --font-signal:"Overpass", "Helvetica Neue", Arial, sans-serif;
+
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+body{
+  margin:0;background:var(--suie);color:var(--os);
+  font:400 1.125rem/1.65 var(--font-recit);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .9  0 0 0 0 .8  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+img,svg{max-width:100%}
+a{color:inherit}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--flamme);outline-offset:3px;border-radius:3px}
+
+.enveloppe{width:min(1180px, 100% - 2.5rem);margin-inline:auto}
+
+/* ---------- Barre ---------- */
+.barre{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:1rem;
+  padding:.65rem clamp(1.25rem,4vw,3rem);
+  background:rgba(27,21,18,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--trait);
+}
+.marque{display:flex;align-items:center;gap:.55rem;text-decoration:none;font-family:var(--font-signal);font-weight:800;font-size:1.2rem;letter-spacing:.02em}
+.marque svg{width:30px;height:30px}
+.barre nav{display:flex;gap:.15rem;margin-left:auto}
+.barre nav a{font-family:var(--font-signal);font-weight:600;font-size:.93rem;color:var(--poussiere);text-decoration:none;padding:.4rem .65rem;border-radius:4px}
+.barre nav a:hover{color:var(--os)}
+.ecoute{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font:600 .85rem var(--font-signal);color:var(--os);
+  background:transparent;border:1px solid rgba(238,93,39,.5);border-radius:999px;
+  padding:.42rem .85rem .38rem;cursor:pointer;
+}
+.ecoute svg{width:14px;height:14px}
+.ecoute:hover{border-color:var(--braise)}
+.ecoute[aria-pressed="true"]{background:var(--braise);border-color:var(--braise);color:#1E0E07}
+.progression{position:fixed;top:0;left:0;height:3px;width:var(--pp,0%);z-index:60;background:linear-gradient(90deg,var(--sang),var(--braise),var(--flamme));display:none}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;overflow:hidden;isolation:isolate;
+  padding:clamp(4.5rem,13vh,8.5rem) 0 clamp(9rem,21vh,13rem);
+  background:
+    radial-gradient(ellipse 85% 60% at 50% 100%, rgba(238,93,39,.42), rgba(176,54,31,.12) 45%, transparent 72%),
+    linear-gradient(#130E0C, var(--suie));
+}
+#braises{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.hero-horizon{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:clamp(110px,17vw,230px);z-index:-1;display:block}
+.hero-signature{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem;margin:0 0 1.6rem;font-family:var(--font-signal);font-weight:800;font-size:clamp(1.35rem,2.2vw,1.7rem);letter-spacing:.02em}
+.hero-signature svg{width:46px;height:46px}
+.hero-signature span{font-weight:400;font-size:.95rem;letter-spacing:.01em;color:var(--poussiere);padding-left:.8rem;border-left:1px solid var(--trait)}
+.hero-titre{
+  margin:0;max-width:13ch;
+  font-family:var(--font-recit);font-style:italic;font-weight:300;
+  font-size:clamp(2.9rem,7.4vw,6.4rem);line-height:1.02;letter-spacing:-.018em;text-wrap:balance;
+  background:linear-gradient(180deg,var(--os) 52%,#F2B47A 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-titre .phrase{background:inherit;-webkit-background-clip:text;background-clip:text}
+.epigraphe{margin:1.7rem 0 0;padding-left:1.1rem;border-left:2px solid var(--braise);max-width:38ch}
+.epigraphe p{margin:0;font:400 italic clamp(1.2rem,1.9vw,1.5rem)/1.42 var(--font-recit);color:var(--os)}
+.hero-chapeau{max-width:50ch;margin:1.6rem 0 2.2rem;font-size:clamp(1.08rem,1.5vw,1.25rem);color:var(--texte-doux)}
+.actions{display:flex;flex-wrap:wrap;gap:.8rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;
+  font:600 1rem/1 var(--font-signal);text-decoration:none;border:0;
+  padding:.95rem 1.35rem .85rem;border-radius:4px;
+  transition:background-color .2s, border-color .2s, color .2s;
+}
+.btn svg{width:14px;height:14px;margin-top:-2px}
+.btn-braise{background:var(--braise);color:#1E0E07}
+.btn-braise:hover{background:var(--flamme)}
+.btn-ligne{background:transparent;border:1px solid rgba(236,227,215,.38);color:var(--os)}
+.btn-ligne:hover{border-color:var(--os)}
+
+/* ---------- Sections ---------- */
+.section{padding:clamp(4.5rem,10vw,8rem) 0}
+.section--serre{padding-top:0}
+.section-tete{max-width:62ch;margin-bottom:clamp(2.5rem,6vw,4.5rem)}
+.section-tete h2,.monde h2{margin:0 0 1rem;font-family:var(--font-recit);font-weight:400;font-size:clamp(2.4rem,5vw,3.8rem);line-height:1.05;letter-spacing:-.012em;text-wrap:balance}
+.section-tete p{margin:0;color:var(--poussiere);font-size:1.18rem}
+
+/* ---------- Préambule ---------- */
+.monde-grille{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(2rem,6vw,5rem);align-items:start}
+.monde-texte p{margin:0 0 1.1em;max-width:62ch;font-size:clamp(1.12rem,1.4vw,1.25rem);line-height:1.7;color:var(--texte-doux)}
+.monde-texte p:first-child{font-size:clamp(1.3rem,1.9vw,1.5rem);line-height:1.48;color:var(--os)}
+
+/* ---------- Panneaux routiers ---------- */
+.chapitre-tete{display:flex;flex-wrap:wrap;align-items:center;gap:.7rem 1rem}
+.panneau{
+  position:relative;display:inline-flex;align-items:center;gap:.55rem;margin:0;
+  font:600 1rem/1.1 var(--font-signal);letter-spacing:.01em;color:#F3F3EC;font-variant-numeric:tabular-nums;
+  background:var(--panneau);padding:.5rem 1rem .42rem;border-radius:7px;
+  box-shadow:inset 0 0 0 3px var(--panneau), inset 0 0 0 5px #E6E6DE, 0 8px 16px -8px rgba(0,0,0,.7);
+}
+.panneau--impacts::before,.panneau--impacts::after{
+  content:"";position:absolute;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle,#0b0807 0 2.2px,#c9c9c0 2.8px 3.6px,transparent 4.2px);
+}
+.panneau--impacts::before{top:5px;right:12px}
+.panneau--impacts::after{bottom:4px;left:38%}
+.ecouter{
+  display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+  font:600 .84rem/1 var(--font-signal);color:var(--flamme);
+  background:transparent;border:1px solid rgba(245,176,65,.35);border-radius:999px;padding:.45rem .8rem .38rem;
+}
+.ecouter svg{width:11px;height:11px;margin-top:-1px}
+.ecouter:hover{border-color:var(--flamme)}
+
+/* ---------- Histoire ---------- */
+.recit-grille{display:grid;grid-template-columns:170px minmax(0,1fr);gap:clamp(2rem,5vw,4.5rem)}
+.rail{position:sticky;top:17vh;height:64vh;align-self:start}
+.rail-route{position:relative;height:100%;margin-left:6px}
+.rail-ligne{position:absolute;left:0;top:0;bottom:0;width:10px;border-radius:5px;background:#2F2723}
+.rail-ligne::after{content:"";position:absolute;left:4px;top:8px;bottom:8px;width:2px;background:repeating-linear-gradient(to bottom,rgba(245,176,65,.45) 0 10px,transparent 10px 22px)}
+.rail-parcouru{position:absolute;left:0;top:0;width:10px;height:var(--p,0%);border-radius:5px;background:linear-gradient(var(--sang),var(--braise));box-shadow:0 0 16px rgba(238,93,39,.45)}
+.rail-vehicule{position:absolute;left:5px;top:var(--p,0%);width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;background:var(--flamme);box-shadow:0 0 0 4px rgba(245,176,65,.2),0 0 20px 5px rgba(238,93,39,.65)}
+.rail-barriere{position:absolute;left:-9px;bottom:-14px;width:28px;height:7px;border-radius:2px;background:repeating-linear-gradient(90deg,#C9382A 0 6px,#E8E1D6 6px 12px)}
+.rail-etapes{list-style:none;margin:0;padding:0;position:absolute;inset:0}
+.rail-etapes li{position:absolute;left:28px;transform:translateY(-50%);font:800 .95rem/1.2 var(--font-signal);font-variant-numeric:tabular-nums;color:var(--poussiere);white-space:nowrap;transition:color .3s}
+.rail-etapes li::before{content:"";position:absolute;left:-15px;top:.55em;width:9px;height:2px;background:currentColor}
+.rail-etapes li small{display:block;font-weight:400;font-size:.78rem;margin-top:.15rem;color:var(--poussiere)}
+.rail-etapes li.actif{color:var(--flamme)}
+.rail-etapes li.actif small{color:var(--os)}
+
+.chapitre{
+  display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  gap:clamp(1.75rem,4vw,3.5rem);align-items:start;
+  padding-block:clamp(3rem,7vw,5rem);border-top:1px solid var(--trait);
+}
+.chapitre:first-child{border-top:0;padding-top:0}
+.chapitre h3{margin:1.1rem 0 1.4rem;font-family:var(--font-recit);font-weight:400;font-size:clamp(1.95rem,3.4vw,2.75rem);line-height:1.1;letter-spacing:-.01em;text-wrap:balance}
+.chapitre-texte p{margin:0 0 1.1em;max-width:60ch;font-size:clamp(1.12rem,1.4vw,1.26rem);line-height:1.72}
+.chapitre-texte > :last-child{margin-bottom:0}
+.chapitre-suite{grid-column:1}
+.fig-2{grid-column:2}
+
+.vignette{margin:0;position:sticky;top:15vh}
+.vignette--fixe{position:static}
+.vignette svg{display:block;width:100%;height:auto;border-radius:3px;box-shadow:0 30px 60px -28px rgba(0,0,0,.9);outline:1px solid var(--trait);outline-offset:-1px}
+.vignette .diptyque{display:grid;gap:.8rem}
+.vignette figcaption{margin-top:.75rem;font:400 .86rem/1.4 var(--font-signal);color:var(--poussiere)}
+
+.voix{margin:1.8rem 0;padding-left:1.15rem;border-left:2px solid var(--braise)}
+.chapitre-texte .voix p{margin:0;font-style:italic;font-size:clamp(1.22rem,1.7vw,1.42rem);line-height:1.45;color:var(--os)}
+.voix cite,.tournant cite{display:block;margin-top:.55rem;font:400 .84rem/1.4 var(--font-signal);font-style:normal;color:var(--poussiere)}
+
+.tournant{grid-column:1 / -1;margin:0;padding:clamp(1rem,3vw,2rem) 0;color:var(--braise)}
+.tournant p{margin:0 0 1.4rem;max-width:21ch;font-family:var(--font-recit);font-style:italic;font-weight:300;font-size:clamp(1.9rem,4.2vw,3.2rem);line-height:1.14;color:var(--os);text-wrap:balance}
+.tournant svg{display:block;width:100%;max-width:640px;height:auto}
+.tournant cite{margin-top:1rem}
+
+/* Avis du shérif */
+.mur{
+  padding:clamp(2rem,5vw,3.2rem) clamp(1.5rem,4vw,2.5rem);border-radius:3px;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 2px,transparent 2px 64px),linear-gradient(170deg,#3A2A21,#21170F);
+  box-shadow:0 30px 60px -28px rgba(0,0,0,.9);display:grid;place-items:center;
+}
+.avis{
+  position:relative;width:min(300px,100%);transform:rotate(-2.4deg);
+  padding:2.2rem 1.6rem 1.7rem;text-align:center;color:#2A1E17;
+  background:radial-gradient(ellipse at 80% 85%,rgba(120,72,30,.35),transparent 55%),radial-gradient(ellipse at 15% 20%,rgba(120,72,30,.22),transparent 50%),#E2D6C0;
+  box-shadow:0 18px 30px -12px rgba(0,0,0,.75);
+  clip-path:polygon(0 2%,8% 0,30% 1.5%,55% 0,78% 1%,100% 0,99% 30%,100% 62%,98.5% 100%,70% 98.5%,42% 100%,18% 98%,0 100%,1.2% 70%,0 40%);
+}
+.avis-clou{position:absolute;top:.8rem;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9a8f86,#2b241f)}
+.avis svg{width:46px;height:46px;color:#6B4A2E;margin:.4rem auto .6rem;display:block}
+.avis-entete{margin:0;font:600 .95rem/1.3 var(--font-signal)}
+.avis-titre{margin:.5rem 0 .3rem;font:800 2.4rem/1 var(--font-signal);letter-spacing:.04em;color:#8E2A18}
+.avis-pied{margin:0;font-family:var(--font-recit);font-style:italic;font-size:1.05rem}
+
+/* Dossiers */
+.dossier{background:var(--cendre);border-radius:4px;padding:clamp(1.5rem,3vw,2rem);border-left:3px solid var(--s-tension)}
+.dossier h4{margin:.9rem 0 .15rem;font:500 1.6rem/1.15 var(--font-recit)}
+.dossier .role{margin:0 0 1.2rem;color:var(--poussiere);font:400 .95rem var(--font-signal)}
+.pieces{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+.pieces li{display:grid;grid-template-columns:minmax(0,10.5rem) minmax(0,1fr);gap:.8rem;align-items:center;font:400 .9rem var(--font-signal);color:var(--texte-doux)}
+.caviar{display:block;height:.8rem;border-radius:2px;background:#0F0B09}
+.dossier .note{margin:1.3rem 0 0;font:400 .88rem/1.45 var(--font-signal);color:var(--poussiere)}
+
+/* ---------- Statuts ---------- */
+.statut{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font:600 .8rem/1.15 var(--font-signal);letter-spacing:.01em;
+  padding:.36rem .7rem .3rem;border-radius:999px;
+  color:var(--s,var(--poussiere));background:color-mix(in srgb,var(--s,var(--poussiere)) 16%,transparent);
+}
+.statut::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:currentColor;margin-top:-1px}
+[data-s="actif"]{--s:var(--s-actif)}
+[data-s="danger"]{--s:var(--s-danger)}
+[data-s="vacant"]{--s:var(--s-vacant)}
+[data-s="tension"]{--s:var(--s-tension)}
+
+/* ---------- Situation 2026 ---------- */
+.territoires-2026{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+.zone{position:relative;overflow:hidden;border-radius:8px;padding:clamp(1.6rem,3vw,2.4rem)}
+.zone h3{margin:.9rem 0 .2rem;font:400 clamp(1.9rem,3vw,2.5rem)/1.1 var(--font-recit)}
+.zone .lieu-sous{margin:0 0 1.2rem;font:600 .9rem var(--font-signal);color:var(--poussiere)}
+.zone p{margin:0 0 1em;color:var(--texte-doux);font-size:1.1rem;max-width:56ch}
+.zone p:last-child{margin-bottom:0}
+.zone--sud{background:radial-gradient(ellipse 90% 70% at 100% 0%,rgba(245,176,65,.16),transparent 65%),var(--cendre)}
+.zone--nord{
+  background:
+    repeating-linear-gradient(135deg,rgba(176,54,31,.13) 0 2px,transparent 2px 12px),
+    linear-gradient(var(--cendre),#21140F);
+  border:1px solid rgba(232,89,76,.3);
+}
+.zone--nord::before{content:"";position:absolute;left:0;right:0;top:0;height:7px;background:repeating-linear-gradient(90deg,#C9382A 0 22px,#E8E1D6 22px 44px);opacity:.85}
+.affaire{margin-top:1.25rem;display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:1rem 2.5rem;align-items:baseline;padding:clamp(1.4rem,3vw,2rem);border-radius:8px;border:1px solid var(--trait)}
+.affaire h3{margin:.7rem 0 0;font:400 1.8rem/1.15 var(--font-recit)}
+.affaire p{margin:0;color:var(--texte-doux);font-size:1.1rem}
+
+/* ---------- Carte ---------- */
+.carte{background:linear-gradient(var(--suie),#1F1814 40%,var(--suie));overflow-x:clip}
+.carte-grille{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.carte-plan{position:relative;width:100%;max-width:500px;margin-inline:auto;aspect-ratio:400 / 560}
+.carte-plan > svg{position:absolute;inset:0;width:100%;height:100%}
+.lieu{
+  position:absolute;width:30px;height:30px;transform:translate(-50%,-50%);
+  display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:transparent;cursor:pointer;color:var(--os);--c:var(--flamme);
+}
+.lieu--nord{--c:var(--s-danger)}
+.lieu--controle{--c:var(--s-tension)}
+.lieu::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px #1B1512,0 0 0 4.5px var(--c);transition:box-shadow .2s}
+.lieu--controle::before{border-radius:2px;transform:rotate(45deg)}
+.lieu:hover::before{box-shadow:0 0 0 3px #1B1512,0 0 0 5px var(--os)}
+.lieu[aria-pressed="true"]::before{box-shadow:0 0 0 3px #1B1512,0 0 0 5.5px var(--os),0 0 22px 7px var(--c)}
+.lieu-nom{position:absolute;left:calc(100% - 2px);top:50%;transform:translateY(-50%);white-space:nowrap;pointer-events:none;font:600 .86rem/1 var(--font-signal);color:var(--os);text-shadow:0 1px 3px #000,0 0 8px #1B1512}
+.lieu--gauche .lieu-nom{left:auto;right:calc(100% - 2px)}
+.lieu--discret .lieu-nom{opacity:0;transition:opacity .2s}
+.lieu--discret:hover .lieu-nom,.lieu--discret:focus-visible .lieu-nom,.lieu--discret[aria-pressed="true"] .lieu-nom{opacity:1}
+.fiche{background:var(--cendre);border-radius:0 6px 6px 0;border-left:3px solid var(--s,var(--braise));padding:clamp(1.6rem,3vw,2.3rem)}
+.fiche h3{margin:.9rem 0 .1rem;font:400 clamp(1.8rem,3vw,2.3rem)/1.1 var(--font-recit);text-wrap:balance}
+.fiche .devise{margin:0 0 1rem;font-style:italic;color:var(--flamme);font-size:1.15rem}
+.fiche p{margin:0 0 1.2rem;color:var(--texte-doux);max-width:46ch}
+.fiche .juridiction{margin:0;font:400 .88rem var(--font-signal);color:var(--poussiere)}
+.legende{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin-top:1.6rem;font:400 .85rem var(--font-signal);color:var(--poussiere)}
+.legende span{display:inline-flex;align-items:center;gap:.5rem}
+.legende i{display:inline-block;width:22px;height:10px;border-radius:2px}
+
+/* ---------- Ce que sait la population ---------- */
+.savoir{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;border-radius:8px}
+.savoir-col{padding:clamp(1.5rem,3vw,2.2rem);border-radius:8px}
+.savoir-col h3{margin:0 0 1.1rem;font:600 1.02rem var(--font-signal)}
+.savoir-col ul{list-style:none;margin:0;padding:0;display:grid;gap:.85rem}
+.savoir-col li{position:relative;padding-left:1.6rem;font-size:1.12rem;line-height:1.5}
+.savoir-col li::before{position:absolute;left:0;top:0;font:800 1rem/1.6 var(--font-signal)}
+.savoir--su{background:var(--cendre)}
+.savoir--su h3{color:var(--s-actif)}
+.savoir--su li::before{content:"✓";color:var(--s-actif)}
+.savoir--inconnu{border:1px dashed rgba(236,227,215,.28)}
+.savoir--inconnu h3{color:var(--flamme)}
+.savoir--inconnu li::before{content:"?";color:var(--flamme)}
+.fin-recit{margin-top:clamp(3.5rem,8vw,6rem);display:grid;grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);gap:1rem clamp(2rem,5vw,4rem);align-items:start;padding-top:clamp(2rem,4vw,3rem);border-top:1px solid var(--trait)}
+.fin-recit h3{margin:0;font:600 1.02rem/1.5 var(--font-signal);color:var(--poussiere)}
+.fin-recit p{margin:0;font:300 italic clamp(1.5rem,2.6vw,2.15rem)/1.38 var(--font-recit);color:var(--os);max-width:40ch;text-wrap:pretty}
+
+/* ---------- Institutions ---------- */
+.organigramme{
+  display:grid;gap:1.5rem 1.25rem;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"gouv gouv" "nord sud" "sasp justice";
+}
+.org{position:relative;background:var(--cendre);border-radius:6px;padding:1.4rem 1.5rem 1.5rem;border-top:3px solid var(--o,var(--braise))}
+.org-type{margin:0 0 .35rem;font:600 .84rem var(--font-signal);color:var(--o)}
+.org h3{margin:0 0 .6rem;font:500 1.5rem/1.15 var(--font-recit)}
+.org p{margin:0;color:var(--texte-doux);font-size:1.04rem}
+.org p + p,.org .statut + p{margin-top:.7rem}
+.org .statut{margin-top:.2rem}
+.org-gouv{grid-area:gouv;--o:var(--flamme)}
+.org-nord{grid-area:nord;--o:var(--s-danger)}
+.org-sud{grid-area:sud;--o:var(--flamme)}
+.org-nord::before,.org-sud::before{content:"";position:absolute;left:50%;top:calc(-1.5rem - 3px);width:2px;height:1.5rem;background:rgba(236,227,215,.28)}
+.org-sasp{grid-area:sasp;--o:var(--s-actif)}
+.org-justice{grid-area:justice;--o:var(--os);background:transparent;border:1px dashed rgba(236,227,215,.3);border-top:3px solid var(--os)}
+.note-institutions{margin:clamp(2rem,4vw,2.8rem) 0 0;padding-top:1.4rem;border-top:1px solid var(--trait);color:var(--poussiere);font-size:1.06rem;max-width:72ch}
+
+/* ---------- Chronologie ---------- */
+.chrono{list-style:none;margin:0;padding:0;border-top:1px solid var(--trait)}
+.chrono li{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:1.5rem;align-items:baseline;padding:1.05rem .9rem;border-bottom:1px solid var(--trait)}
+.chrono .an{font:800 1.12rem var(--font-signal);font-variant-numeric:tabular-nums;color:var(--flamme)}
+.chrono .evt{font:400 1.22rem/1.4 var(--font-recit)}
+.chrono li.maintenant{background:linear-gradient(90deg,rgba(232,89,76,.18),rgba(232,89,76,0) 80%)}
+
+/* ---------- Personnages ---------- */
+.archives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3rem 1.25rem;padding-top:1.6rem}
+.archive{position:relative;background:var(--cendre);border-radius:0 6px 6px 6px;padding:1.6rem 1.6rem 1.7rem}
+.onglet{position:absolute;left:0;bottom:100%;padding:.5rem 1rem .35rem;background:var(--cendre);border-radius:6px 6px 0 0;font:600 .84rem var(--font-signal);color:var(--poussiere);white-space:nowrap}
+.archive h3{margin:0 0 .65rem;font:500 1.65rem/1.15 var(--font-recit)}
+.archive .statut{margin-bottom:.9rem}
+.archive p{margin:0;color:var(--texte-doux);font-size:1.06rem;max-width:56ch}
+
+/* ---------- Rejoindre ---------- */
+.rejoindre{background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(238,93,39,.14),transparent 70%)}
+.idees{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin:0 0 clamp(2.5rem,5vw,3.5rem);padding:0;list-style:none}
+.idee{background:var(--cendre);border-radius:6px;padding:1.5rem 1.4rem 1.6rem}
+.idee h3{margin:0 0 .55rem;font:500 1.3rem/1.2 var(--font-recit)}
+.idee p{margin:0;color:var(--texte-doux);font-size:1rem;line-height:1.55}
+.depart{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem 2.5rem;
+  padding:clamp(1.8rem,4vw,2.8rem);border-radius:8px;
+  border:1px solid rgba(238,93,39,.38);background:linear-gradient(115deg,rgba(238,93,39,.14),rgba(245,176,65,.03) 70%);
+}
+.depart h3{margin:0 0 .4rem;font:300 italic clamp(1.9rem,3.6vw,2.7rem)/1.1 var(--font-recit)}
+.depart p{margin:0;color:var(--texte-doux);max-width:48ch}
+
+/* ---------- Pied ---------- */
+.pied{border-top:1px solid var(--trait);padding:2.2rem 0 2.6rem;font:400 .86rem/1.5 var(--font-signal);color:var(--poussiere)}
+.pied .enveloppe{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem}
+.pied strong{color:var(--os);font-weight:800}
+
+/* ---------- Narration ---------- */
+body.narration{padding-bottom:10rem}
+body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
+.en-lecture{opacity:1;transition:opacity .4s}
+.phrase{transition:background-color .25s}
+.phrase-active{
+  background-image:linear-gradient(transparent 10%,rgba(238,93,39,.24) 10%,rgba(238,93,39,.24) 92%,transparent 92%);
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:2px;
+}
+.hero-titre .phrase-active{background-image:linear-gradient(180deg,var(--os) 52%,#F2B47A 100%);text-decoration:underline;text-decoration-color:var(--braise);text-decoration-thickness:3px;text-underline-offset:10px}
+.bloc-actif{outline:1px solid rgba(238,93,39,.55);outline-offset:10px;border-radius:8px}
+
+.lecteur{
+  position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:70;
+  width:min(780px, calc(100% - 1.5rem));
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.7rem 1rem;align-items:center;
+  padding:.9rem 1.1rem 1rem;border-radius:10px;
+  background:rgba(39,31,27,.95);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid rgba(238,93,39,.35);box-shadow:0 24px 50px -20px rgba(0,0,0,.95);
+}
+.lecteur[hidden]{display:none}
+.lecteur-info{min-width:0;display:flex;align-items:center;gap:.8rem}
+.lecteur-info svg{flex:none;width:30px;height:30px}
+.lecteur-textes{min-width:0}
+.lecteur-annee{display:block;font:600 .78rem/1.2 var(--font-signal);color:var(--flamme)}
+.lecteur-section{display:block;font:400 italic 1.15rem/1.25 var(--font-recit);color:var(--os);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lecteur-commandes{display:flex;align-items:center;gap:.35rem}
+.lecteur-commandes button{
+  display:grid;place-items:center;width:40px;height:40px;padding:0;cursor:pointer;
+  border-radius:50%;border:1px solid var(--trait);background:transparent;color:var(--os);
+}
+.lecteur-commandes button:hover{border-color:rgba(236,227,215,.45)}
+.lecteur-commandes svg{width:15px;height:15px}
+.lecteur-commandes .l-principal{width:48px;height:48px;border:0;background:var(--braise);color:#1E0E07}
+.lecteur-commandes .l-principal:hover{background:var(--flamme)}
+.lecteur-commandes .l-principal svg{width:17px;height:17px}
+.lecteur-options{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.4rem;font:400 .84rem var(--font-signal);color:var(--poussiere)}
+.lecteur-options label{display:inline-flex;align-items:center;gap:.5rem}
+.lecteur-options select{
+  max-width:min(300px, 60vw);font:400 .84rem var(--font-signal);color:var(--os);
+  background:var(--suie);border:1px solid var(--trait);border-radius:4px;padding:.32rem .5rem;
+}
+.lecteur-options input{accent-color:var(--braise);width:15px;height:15px;margin:0}
+.lecteur-barre{grid-column:1 / -1;height:3px;border-radius:2px;background:rgba(236,227,215,.12);overflow:hidden}
+.lecteur-barre span{display:block;height:100%;width:var(--lp,0%);background:linear-gradient(90deg,var(--braise),var(--flamme));transition:width .4s}
+.lecteur-message{grid-column:1 / -1;margin:0;font:400 .88rem/1.45 var(--font-signal);color:var(--flamme)}
+.lecteur-message[hidden]{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .barre nav a.nav-secondaire{display:none}
+}
+@media (max-width:1040px){
+  .idees{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .recit-grille{grid-template-columns:1fr}
+  .rail{display:none}
+  .progression{display:block}
+  .chapitre,.monde-grille,.carte-grille,.territoires-2026,.savoir,.affaire,.fin-recit,.archives{grid-template-columns:1fr}
+  .vignette{position:static}
+  .chapitre-suite,.fig-2{grid-column:auto}
+  .organigramme{grid-template-columns:1fr;grid-template-areas:"gouv" "nord" "sud" "sasp" "justice"}
+  .org-sud::before{display:none}
+  .chrono li{grid-template-columns:6.5rem minmax(0,1fr);gap:1rem}
+}
+@media (max-width:720px){
+  .barre nav a:not(.nav-rejoindre){display:none}
+  .ecoute span{display:none}
+  .ecoute{padding:.5rem .6rem}
+}
+@media (max-width:560px){
+  .idees{grid-template-columns:1fr}
+  .pieces li{grid-template-columns:1fr;gap:.3rem}
+  .lecteur{grid-template-columns:1fr;bottom:.5rem;padding:.8rem .9rem .9rem}
+  .lecteur-commandes{justify-content:center}
+}
+@media (max-width:520px){
+  .hero-signature span{border-left:0;padding-left:0;flex-basis:100%}
+  .actions .btn{width:100%;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-phenix" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#B0361F"/><stop offset=".5" stop-color="#EE5D27"/><stop offset="1" stop-color="#F5B041"/>
+    </linearGradient>
+    <symbol id="logo" viewBox="0 0 64 64">
+      <g fill="url(#g-phenix)">
+        <path d="M29 34C21 33 10 27 4 10c6 6 10 8 14 8-4-4-6-9-5-14 4 7 9 11 14 13-1 5 0 11 2 14z"/>
+        <path d="M35 34c8-1 19-7 25-24-6 6-10 8-14 8 4-4 6-9 5-14-4 7-9 11-14 13 1 5 0 11-2 14z"/>
+        <path d="M32 9c3.5 4 4.5 11 3 19-1 6 1.5 14-3 22-4.5-8-2-16-3-22-1.5-8-.5-15 3-19z"/>
+        <path d="M32 50c-2 4-6 6-10 10 5-1 8-2 10-4 2 2 5 3 10 4-4-4-8-6-10-10z"/>
+      </g>
+    </symbol>
+    <symbol id="i-lire" viewBox="0 0 16 16"><path d="M4 2.5v11L13.5 8z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 16 16"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor"/></symbol>
+    <symbol id="i-prec" viewBox="0 0 16 16"><path d="M3 2.5h2v11H3zM14 2.5v11L6 8z" fill="currentColor"/></symbol>
+    <symbol id="i-suiv" viewBox="0 0 16 16"><path d="M11 2.5h2v11h-2zM2 2.5v11L10 8z" fill="currentColor"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 16 16"><path d="M3.5 3.5h9v9h-9z" fill="currentColor"/></symbol>
+    <symbol id="i-voix" viewBox="0 0 16 16"><path d="M2 6h2.5L8 3v10L4.5 10H2z" fill="currentColor"/><path d="M10.5 5.5a3.5 3.5 0 0 1 0 5M12.5 3.5a6.5 6.5 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <pattern id="barriere" width="20" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#C9382A"/><rect x="10" width="10" height="10" fill="#E8E1D6"/></pattern>
+  </defs>
+</svg>
+
+<div class="progression" id="progression" aria-hidden="true"></div>
+
+<header class="barre">
+  <a class="marque" href="#accueil" aria-label="Phoenix, retour en haut"><svg aria-hidden="true"><use href="#logo"/></svg>Phoenix</a>
+  <nav aria-label="Sections du site">
+    <a href="#histoire">L’histoire</a>
+    <a href="#situation">2026</a>
+    <a href="#territoires">Carte</a>
+    <a href="#institutions" class="nav-secondaire">Institutions</a>
+    <a href="#personnages" class="nav-secondaire">Personnages</a>
+    <a href="#rejoindre" class="nav-rejoindre">Rejoindre</a>
+  </nav>
+  <button class="ecoute" id="ecoute" type="button" aria-pressed="false">
+    <svg aria-hidden="true"><use href="#i-voix"/></svg>
+    <span id="ecoute-texte">Écouter le récit</span>
+  </button>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="accueil" data-section="Phoenix" data-annee="Prologue">
+  <canvas id="braises" aria-hidden="true"></canvas>
+  <svg class="hero-horizon" viewBox="0 0 1440 230" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d="M0 230V150l90-18 80-26 70-30 60-36 40-22 30 10 36 26 60 40 90 34 110 26 120 8 110-10 100-22 90-14 80 6 74 18 80 10 80-4 70 2v156z" fill="#2A1A14"/>
+    <path d="M0 230v-50l120-10 150 8 160-14 140 12 170-6 160 14 150-10 140 10 150-6 100 4v48z" fill="#1F1612"/>
+    <path d="M0 230v-24l200-6 260 8 240-6 260 8 260-6 220 4v22z" fill="#1B1512"/>
+  </svg>
+  <div class="enveloppe">
+    <p class="hero-signature"><svg aria-hidden="true"><use href="#logo"/></svg>Phoenix <span>Serveur FiveM</span></p>
+    <h1 class="hero-titre" data-lire data-dire="Phoenix. Les cendres de San Andreas.">Les cendres de San&nbsp;Andreas</h1>
+    <blockquote class="epigraphe">
+      <p data-lire>Le passé a divisé San Andreas. Le présent porte encore ses cicatrices.</p>
+    </blockquote>
+    <p class="hero-chapeau">Los Santos tient debout. Le Nord reste fermé au public, derrière les restrictions d’accès. Un nouveau gouvernement a succédé à Mozzini, sans effacer les cicatrices de la crise.</p>
+    <div class="actions">
+      <button class="btn btn-braise" type="button" data-ecouter-depuis="accueil"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter le récit</button>
+      <a class="btn btn-ligne" href="#histoire">Lire l’histoire</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRÉAMBULE ================= -->
+<section class="section monde" id="monde" data-section="Un État divisé" data-annee="Préambule">
+  <div class="enveloppe monde-grille">
+    <h2 data-lire>Un État divisé</h2>
+    <div class="monde-texte">
+      <p data-lire>San Andreas est un État américain marqué par une profonde fracture entre Los Santos, au sud, et Blaine County, au nord. Tandis que la métropole a conservé ses activités économiques et ses institutions, le nord a subi des années de déclin, d’exode et de violences.</p>
+      <p data-lire>À la date de référence du présent récit, en 2026, le Nord demeure fermé au public. Cette fermeture constitue une situation établie, non une annonce de réouverture.</p>
+      <p data-lire>Un nouveau gouvernement a succédé à l’administration controversée de Simone Mozzini. Le Projet Phoenix désigne le cadre institutionnel adopté pour répondre à la crise. Son existence ne signifie pas que la reconstruction du Nord est achevée.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HISTOIRE ================= -->
+<section class="section section--serre recit" id="histoire">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>Histoire de San Andreas</h2>
+      <p>De la grande fracture au Projet Phoenix, les années qui ont coupé l’État en deux.</p>
+    </header>
+
+    <div class="recit-grille">
+      <aside class="rail" aria-hidden="true">
+        <div class="rail-route" id="rail">
+          <span class="rail-ligne"></span>
+          <span class="rail-parcouru"></span>
+          <ol class="rail-etapes">
+            <li data-at="0" style="top:0%" class="actif">2016<small>Déclin du Nord</small></li>
+            <li data-at="0.3" style="top:30%">2019<small>Disparition de Gahllager</small></li>
+            <li data-at="0.5" style="top:50%">2020–2022<small>Rebelles et exode</small></li>
+            <li data-at="0.7" style="top:70%">2023<small>Affaire Mozzini</small></li>
+            <li data-at="0.85" style="top:85%">2024–2025<small>Projet Phoenix</small></li>
+            <li data-at="1" style="top:100%">2026<small>Nord fermé au public</small></li>
+          </ol>
+          <span class="rail-vehicule"></span>
+          <span class="rail-barriere"></span>
+        </div>
+      </aside>
+
+      <div class="chapitres">
+
+        <!-- Avant 2016 -->
+        <article class="chapitre" id="ch-economies" data-pos="0" data-section="Deux économies" data-annee="Avant 2016">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau">Avant 2016</p><button class="ecouter" type="button" data-ecouter-depuis="ch-economies"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="Avant 2016. Deux économies.">Deux économies</h3>
+            <p data-lire>Los Santos s’est développée autour de son port, de la finance, des services et de grands groupes industriels. Blaine County reposait sur des activités plus modestes&nbsp;: pêche à Paleto Bay, agriculture à Grapeseed, commerce local et ateliers autour de Sandy Shores. Les deux régions appartenaient au même État, mais leurs moyens économiques étaient inégaux.</p>
+          </div>
+          <figure class="vignette vignette--fixe">
+            <div class="diptyque">
+              <svg viewBox="0 30 400 220" role="img" aria-label="Los Santos la nuit, ses tours éclairées et les grues du port">
+                <defs>
+                  <linearGradient id="v5ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A1118"/><stop offset=".55" stop-color="#3D2026"/><stop offset=".92" stop-color="#C4642A"/><stop offset="1" stop-color="#E88A3B"/></linearGradient>
+                  <linearGradient id="v5eau" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2418"/><stop offset="1" stop-color="#120D0C"/></linearGradient>
+                  <pattern id="v5fen" width="7" height="9" patternUnits="userSpaceOnUse"><rect x="2" y="2" width="3" height="4" fill="#F5B041"/></pattern>
+                  <g id="v5tours"><rect x="8" y="120" width="34" height="76"/><rect x="46" y="96" width="28" height="100"/><rect x="78" y="58" width="30" height="138"/><rect x="112" y="104" width="26" height="92"/><rect x="142" y="76" width="36" height="120"/><rect x="182" y="126" width="30" height="70"/><rect x="216" y="108" width="22" height="88"/></g>
+                </defs>
+                <rect width="400" height="196" fill="url(#v5ciel)"/>
+                <g fill="#2A171A"><rect x="30" y="100" width="22" height="96"/><rect x="100" y="86" width="20" height="110"/><rect x="170" y="98" width="22" height="98"/><rect x="236" y="130" width="24" height="66"/></g>
+                <use href="#v5tours" fill="#120C0C"/>
+                <use href="#v5tours" fill="url(#v5fen)" opacity=".42"/>
+                <line x1="93" y1="58" x2="93" y2="34" stroke="#120C0C" stroke-width="2"/><circle cx="93" cy="34" r="2" fill="#FF4A2A"/>
+                <g opacity=".85"><rect x="262" y="178" width="28" height="10" fill="#5A2A1C"/><rect x="292" y="178" width="28" height="10" fill="#243C42"/><rect x="276" y="168" width="28" height="10" fill="#6A4E20"/><rect x="324" y="178" width="28" height="10" fill="#5A2A1C"/><rect x="354" y="178" width="28" height="10" fill="#243C42"/></g>
+                <g stroke="#120C0C" stroke-width="3" fill="none" stroke-linecap="square">
+                  <path d="M292 192V104M308 192V104M292 150h16M292 124h16"/><path d="M256 102h120"/><path d="M300 82 262 101M300 82l74 19M300 82v20"/><path d="M350 104v40" stroke-width="1.2"/>
+                  <path d="M362 192v-58M372 192v-58M346 132h52M367 120v12M367 120l-20 11M367 120l30 11"/>
+                </g>
+                <circle cx="300" cy="81" r="2" fill="#FF4A2A"/><circle cx="367" cy="119" r="1.8" fill="#FF4A2A"/>
+                <rect y="192" width="400" height="4" fill="#0E0909"/>
+                <rect y="196" width="400" height="84" fill="url(#v5eau)"/>
+                <g stroke="#F5B041" stroke-width="2" stroke-linecap="round" opacity=".32"><path d="M90 206h10M150 204h14M58 214h8M160 218h10M96 226h6M196 210h8M124 236h6M30 210h8"/></g>
+              </svg>
+              <svg viewBox="0 40 400 220" role="img" aria-label="Le ponton de Paleto Bay et un bateau de pêche au crépuscule">
+                <defs>
+                  <linearGradient id="v1ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#231310"/><stop offset=".5" stop-color="#6A2D18"/><stop offset=".9" stop-color="#E07E39"/><stop offset="1" stop-color="#F0A24A"/></linearGradient>
+                  <linearGradient id="v1mer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A2A17"/><stop offset=".4" stop-color="#2A1812"/><stop offset="1" stop-color="#150F0C"/></linearGradient>
+                </defs>
+                <rect width="400" height="187" fill="url(#v1ciel)"/>
+                <circle cx="292" cy="178" r="30" fill="#F8C66A"/>
+                <path d="M0 187V128l38-12 34-20 32-26 22-18 14 6 16 18 32 22 38 24 36 24 38 14 40 8 60 4v15z" fill="#3A1E14"/>
+                <path d="M0 187v-27l50-8 46-6 54 8 60 12 50 8 60 4 80 2v7z" fill="#26150F"/>
+                <rect y="186" width="400" height="94" fill="url(#v1mer)"/>
+                <g stroke="#F5B041" stroke-linecap="round" stroke-width="2"><line x1="268" y1="194" x2="316" y2="194" opacity=".7"/><line x1="278" y1="202" x2="306" y2="202" opacity=".5"/><line x1="262" y1="211" x2="300" y2="211" opacity=".35"/><line x1="284" y1="221" x2="302" y2="221" opacity=".22"/></g>
+                <g fill="#0F0A08">
+                  <rect x="0" y="198" width="192" height="7"/>
+                  <rect x="14" y="205" width="4" height="40"/><rect x="58" y="205" width="4" height="44"/><rect x="102" y="205" width="4" height="48"/><rect x="146" y="205" width="4" height="52"/><rect x="186" y="205" width="4" height="56"/>
+                  <path d="M68 198v-20l17-11 17 11v20z"/>
+                  <rect x="40" y="168" width="3" height="30"/><rect x="34" y="166" width="15" height="4"/>
+                  <path d="M214 234h62l-8 14h-46z"/><rect x="236" y="220" width="18" height="14"/><rect x="246" y="190" width="2.5" height="44"/>
+                </g>
+                <line x1="248" y1="192" x2="276" y2="234" stroke="#0F0A08" stroke-width="1"/>
+                <g stroke="#1D110C" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M176 72q5-5 10 0q5-5 10 0"/><path d="M210 58q4-4 8 0q4-4 8 0"/></g>
+              </svg>
+            </div>
+            <figcaption>Au sud, Los Santos et son port. Au nord, Paleto Bay, qui vivait de la pêche.</figcaption>
+          </figure>
+        </article>
+
+        <!-- 2016–2019 -->
+        <article class="chapitre" id="ch-fracture" data-pos="0" data-section="La grande fracture" data-annee="2016 – 2019">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau">2016 – 2019</p><button class="ecouter" type="button" data-ecouter-depuis="ch-fracture"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="De 2016 à 2019. La grande fracture.">La grande fracture</h3>
+            <p data-lire>La concentration des investissements à Los Santos fragilisa les entreprises du Nord. Des commerces fermèrent, des emplois disparurent et les infrastructures se dégradèrent. Un plan de soutien annoncé en 2018 resta partiellement inachevé.</p>
+            <p data-lire>En 2019, le shérif Gahllager disparut dans des circonstances jamais élucidées, aggravant le sentiment d’abandon.</p>
+            <blockquote class="voix" data-voix="temoin">
+              <p data-lire>Nous étions les oubliés de San Andreas, personne ne nous aidait, personne ne voulait de nous.</p>
+              <cite>Une famille de Paleto Bay</cite>
+            </blockquote>
+          </div>
+          <figure class="vignette">
+            <div class="mur" role="img" aria-label="Un avis placardé sur un mur de planches : bureau du shérif de Blaine County, fermé">
+              <div class="avis">
+                <span class="avis-clou"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.25 5.1 5.54-.6-3.29 4.5 3.29 4.5-5.54-.6L12 21l-2.25-5.1-5.54.6L7.5 12 4.21 7.5l5.54.6z"/><circle cx="12" cy="12" r="2.2"/></svg>
+                <p class="avis-entete">Bureau du shérif<br>Blaine County</p>
+                <p class="avis-titre">FERMÉ</p>
+                <p class="avis-pied">Jusqu’à nouvel ordre.</p>
+              </div>
+            </div>
+            <figcaption>2019. Le shérif Gahllager disparaît. Les circonstances restent inconnues.</figcaption>
+          </figure>
+        </article>
+
+        <!-- 2020–2022 -->
+        <article class="chapitre" id="ch-sombres" data-pos="0.4" data-section="Les années sombres" data-annee="2020 – 2022">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau panneau--impacts">2020 – 2022</p><button class="ecouter" type="button" data-ecouter-depuis="ch-sombres"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="De 2020 à 2022. Les années sombres.">Les années sombres</h3>
+            <p data-lire>Le retrait progressif des services publics laissa des espaces à des groupes armés surnommés les «&nbsp;Rebelles&nbsp;». Barrages illégaux, extorsions et occupations de bâtiments rendirent les déplacements dangereux.</p>
+          </div>
+          <figure class="vignette vignette--fixe">
+            <svg viewBox="0 0 400 280" role="img" aria-label="Une station-service fermée de nuit, une barrière illégale en travers de la route et des tirs au loin">
+              <defs>
+                <linearGradient id="v3ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0F0B0A"/><stop offset=".72" stop-color="#22140F"/><stop offset="1" stop-color="#5A2414"/></linearGradient>
+                <radialGradient id="v3eclat"><stop offset="0" stop-color="#FFD27A"/><stop offset=".3" stop-color="#EE5D27" stop-opacity=".8"/><stop offset="1" stop-color="#EE5D27" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="400" height="197" fill="url(#v3ciel)"/>
+              <g fill="#E9DCCB"><circle cx="40" cy="30" r="1"/><circle cx="96" cy="58" r=".8"/><circle cx="150" cy="22" r="1.2"/><circle cx="212" cy="48" r=".8"/><circle cx="250" cy="18" r="1"/><circle cx="330" cy="40" r="1.2"/><circle cx="372" cy="70" r=".8"/><circle cx="300" cy="90" r=".7"/><circle cx="20" cy="96" r=".8"/><circle cx="180" cy="84" r=".7"/></g>
+              <path d="M0 197v-13l60-8 60 6 70-10 70 8 70-10 70 8v19z" fill="#160F0C"/>
+              <circle cx="320" cy="176" r="15" fill="url(#v3eclat)"/><circle cx="354" cy="180" r="9" fill="url(#v3eclat)" opacity=".8"/>
+              <rect y="196" width="400" height="84" fill="#18110E"/>
+              <path d="M150 280l46-84h10l56 84z" fill="#251C18"/>
+              <g fill="#D9B25A" opacity=".55"><rect x="200" y="204" width="2" height="6"/><rect x="200.4" y="220" width="3" height="10"/><rect x="200.6" y="244" width="4.5" height="16"/></g>
+              <g fill="#0C0807">
+                <rect x="0" y="160" width="26" height="45"/><rect x="24" y="134" width="150" height="15"/>
+                <rect x="40" y="149" width="6" height="56"/><rect x="152" y="149" width="6" height="56"/>
+                <rect x="78" y="182" width="12" height="23"/><rect x="108" y="182" width="12" height="23"/>
+                <rect x="268" y="96" width="5" height="110"/>
+              </g>
+              <rect x="60" y="149" width="40" height="2" fill="#F5B041" opacity=".22"/>
+              <g transform="rotate(8 270 92)">
+                <rect x="236" y="62" width="70" height="48" rx="2" fill="#0C0807" stroke="#3A2C25"/>
+                <text x="271" y="92" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-weight="800" font-size="15" letter-spacing="1" fill="#E8594C">FERMÉ</text>
+              </g>
+              <rect x="166" y="236" width="84" height="9" fill="url(#barriere)"/>
+              <rect x="170" y="245" width="4" height="17" fill="#0C0807"/><rect x="242" y="245" width="4" height="17" fill="#0C0807"/>
+            </svg>
+            <figcaption>Barrages illégaux et commerces fermés sur les routes du Nord.</figcaption>
+          </figure>
+
+          <blockquote class="tournant" data-voix="temoin">
+            <p data-lire>Les semaines sont devenues des mois, puis les mois, des années.</p>
+            <svg viewBox="0 0 640 70" aria-hidden="true">
+              <defs>
+                <g id="cinq" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="4" y1="9" x2="6" y2="58"/><line x1="16" y1="6" x2="17" y2="60"/><line x1="28" y1="9" x2="27" y2="58"/><line x1="40" y1="7" x2="41" y2="59"/><line x1="-3" y1="50" x2="48" y2="15"/></g>
+              </defs>
+              <use href="#cinq" x="8"/><use href="#cinq" x="66" opacity=".9"/><use href="#cinq" x="124" opacity=".8"/><use href="#cinq" x="182" opacity=".7"/><use href="#cinq" x="240" opacity=".6"/><use href="#cinq" x="298" opacity=".5"/><use href="#cinq" x="356" opacity=".4"/><use href="#cinq" x="414" opacity=".3"/><use href="#cinq" x="472" opacity=".22"/><use href="#cinq" x="530" opacity=".15"/><use href="#cinq" x="588" opacity=".08"/>
+            </svg>
+            <cite>Une famille de Paleto Bay</cite>
+          </blockquote>
+
+          <div class="chapitre-texte chapitre-suite">
+            <p data-lire>De nombreuses familles quittèrent Paleto Bay, Sandy Shores et les zones rurales pour se réfugier à Los Santos. Les US Marshals participèrent à certaines opérations de protection et d’assistance aux personnes déplacées.</p>
+            <blockquote class="voix" data-voix="temoin">
+              <p data-lire>Alors nous sommes partis, en laissant toute notre vie derrière nous.</p>
+              <cite>Une famille de Paleto Bay</cite>
+            </blockquote>
+          </div>
+          <figure class="vignette vignette--fixe fig-2">
+            <svg viewBox="0 0 400 280" role="img" aria-label="Une voiture chargée de bagages roule de nuit vers les lumières lointaines de Los Santos">
+              <defs>
+                <linearGradient id="v4ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E0A09"/><stop offset=".6" stop-color="#2A1610"/><stop offset=".96" stop-color="#B8521F"/><stop offset="1" stop-color="#E98A3C"/></linearGradient>
+                <radialGradient id="v4feu"><stop offset="0" stop-color="#FF5A3C" stop-opacity=".9"/><stop offset=".35" stop-color="#E0301C" stop-opacity=".45"/><stop offset="1" stop-color="#E0301C" stop-opacity="0"/></radialGradient>
+                <linearGradient id="v4faisceau" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F6E3B8" stop-opacity=".2"/><stop offset="1" stop-color="#F6E3B8" stop-opacity="0"/></linearGradient>
+              </defs>
+              <rect width="400" height="151" fill="url(#v4ciel)"/>
+              <g fill="#3B1D12"><rect x="150" y="138" width="8" height="13"/><rect x="160" y="132" width="6" height="19"/><rect x="168" y="140" width="10" height="11"/><rect x="180" y="126" width="7" height="25"/><rect x="189" y="134" width="9" height="17"/><rect x="200" y="122" width="6" height="29"/><rect x="208" y="136" width="10" height="15"/><rect x="220" y="130" width="7" height="21"/><rect x="229" y="140" width="12" height="11"/><rect x="243" y="135" width="6" height="16"/></g>
+              <g fill="#F5B041" opacity=".8"><rect x="182" y="130" width="1.5" height="1.5"/><rect x="201" y="127" width="1.5" height="1.5"/><rect x="202" y="134" width="1.5" height="1.5"/><rect x="222" y="134" width="1.5" height="1.5"/><rect x="162" y="137" width="1.5" height="1.5"/><rect x="211" y="140" width="1.5" height="1.5"/></g>
+              <rect y="150" width="400" height="130" fill="#140E0C"/>
+              <path d="M40 280 196 150h8l156 130z" fill="#221A16"/>
+              <path d="M168 238 196 152h8l28 86z" fill="url(#v4faisceau)"/>
+              <g fill="#D9B25A" opacity=".5"><path d="M199 158h2l.4 6h-2.8z"/><path d="M198 176h4l.8 12h-5.6z"/><path d="M196.5 206h7l1.4 18h-9.8z"/></g>
+              <circle cx="163" cy="239" r="24" fill="url(#v4feu)"/><circle cx="237" cy="239" r="24" fill="url(#v4feu)"/>
+              <g fill="#0B0807">
+                <rect x="172" y="197" width="56" height="10" rx="2"/>
+                <path d="M150 264v-28q0-8 8-10l12-14q3-6 10-6h40q7 0 10 6l12 14q8 2 8 10v28z"/>
+                <rect x="156" y="263" width="16" height="11"/><rect x="228" y="263" width="16" height="11"/>
+              </g>
+              <path d="M176 212h48l10 13h-68z" fill="#211915"/>
+              <g stroke="#2A201B" stroke-width="1.5"><line x1="186" y1="197" x2="186" y2="207"/><line x1="214" y1="197" x2="214" y2="207"/></g>
+              <rect x="154" y="236" width="18" height="6" rx="2" fill="#FF4A2A"/><rect x="228" y="236" width="18" height="6" rx="2" fill="#FF4A2A"/>
+              <rect x="188" y="247" width="24" height="8" rx="1" fill="#3A2C25"/>
+            </svg>
+            <figcaption>De nombreuses familles prennent la route de Los Santos.</figcaption>
+          </figure>
+        </article>
+
+        <!-- 2023 -->
+        <article class="chapitre" id="ch-capitole" data-pos="0.7" data-section="Les secrets du Capitole" data-annee="2023">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau">2023</p><button class="ecouter" type="button" data-ecouter-depuis="ch-capitole"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="2023. Les secrets du Capitole.">Les secrets du Capitole</h3>
+            <p data-lire>Des irrégularités présumées furent signalées dans l’attribution de contrats publics et dans certaines acquisitions de terrains. Le gouverneur Simone Mozzini fut mis en cause dans le débat public et nia toute corruption. Des investigations furent engagées. Aucune condamnation définitive de l’ancien gouverneur n’est établie dans le récit officiel.</p>
+          </div>
+          <aside class="dossier" aria-label="Affaire Mozzini, ce qui est contesté">
+            <span class="statut" data-s="tension">Accusations non tranchées</span>
+            <h4>Affaire Mozzini</h4>
+            <p class="role">Investigations engagées en 2023</p>
+            <ul class="pieces">
+              <li>Contrats publics<span class="caviar" style="width:92%"></span></li>
+              <li>Acquisitions de terrains<span class="caviar" style="width:76%"></span></li>
+            </ul>
+            <p class="note">Les soupçons restent distincts de toute déclaration de culpabilité.</p>
+          </aside>
+        </article>
+
+        <!-- 2024 -->
+        <article class="chapitre" id="ch-mozzini" data-pos="0.8" data-section="La fin de l’administration Mozzini" data-annee="2024">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau">2024</p><button class="ecouter" type="button" data-ecouter-depuis="ch-mozzini"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="2024. La fin de l’administration Mozzini.">La fin de l’administration Mozzini</h3>
+            <p data-lire>Mozzini renonça à briguer un nouveau mandat et quitta ses fonctions. Un nouveau gouvernement prit la tête de San Andreas, héritant de finances fragilisées, de tensions territoriales et d’une confiance institutionnelle profondément affaiblie. Le changement de gouvernement n’effaça ni les dossiers judiciaires ni les conséquences de la crise.</p>
+          </div>
+          <figure class="vignette">
+            <svg viewBox="0 0 400 280" role="img" aria-label="Le Capitole de San Andreas au crépuscule, quelques fenêtres encore éclairées">
+              <defs>
+                <linearGradient id="v6ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15111A"/><stop offset=".55" stop-color="#36202A"/><stop offset=".9" stop-color="#A9502A"/><stop offset="1" stop-color="#D9773A"/></linearGradient>
+              </defs>
+              <rect width="400" height="246" fill="url(#v6ciel)"/>
+              <g fill="#E9DCCB"><circle cx="40" cy="26" r="1"/><circle cx="120" cy="46" r=".8"/><circle cx="300" cy="30" r="1.1"/><circle cx="356" cy="64" r=".8"/><circle cx="250" cy="18" r=".7"/><circle cx="72" cy="80" r=".7"/></g>
+              <rect y="244" width="400" height="36" fill="#0D0909"/>
+              <g fill="#100B0B">
+                <circle cx="16" cy="226" r="20"/><circle cx="38" cy="232" r="16"/><circle cx="384" cy="224" r="22"/><circle cx="362" cy="234" r="15"/>
+                <rect x="30" y="168" width="80" height="76"/><rect x="290" y="168" width="80" height="76"/>
+                <rect x="100" y="150" width="200" height="94"/>
+                <rect x="162" y="86" width="76" height="6"/>
+                <path d="M166 86c4-36 64-36 68 0z"/>
+                <rect x="194" y="44" width="12" height="14"/><path d="M192 46l8-10 8 10z"/>
+                <rect x="199.2" y="12" width="1.6" height="26"/>
+                <rect x="140" y="244" width="120" height="6"/><rect x="132" y="250" width="136" height="6"/>
+              </g>
+              <path d="M201 13h18l-3 4 3 4h-18z" fill="#3A2A2A"/>
+              <rect x="168" y="92" width="64" height="34" fill="#1A1212"/>
+              <g fill="#0C0808"><rect x="171" y="94" width="3" height="32"/><rect x="180" y="94" width="3" height="32"/><rect x="189" y="94" width="3" height="32"/><rect x="198.5" y="94" width="3" height="32"/><rect x="208" y="94" width="3" height="32"/><rect x="217" y="94" width="3" height="32"/><rect x="226" y="94" width="3" height="32"/></g>
+              <rect x="146" y="152" width="108" height="92" fill="#1A1212"/>
+              <g fill="#0C0808"><rect x="148" y="158" width="7" height="86"/><rect x="162" y="158" width="7" height="86"/><rect x="176" y="158" width="7" height="86"/><rect x="190" y="158" width="7" height="86"/><rect x="204" y="158" width="7" height="86"/><rect x="218" y="158" width="7" height="86"/><rect x="232" y="158" width="7" height="86"/><rect x="246" y="158" width="7" height="86"/></g>
+              <path d="M144 152 200 122l56 30z" fill="#100B0B"/>
+              <g fill="#F5B041">
+                <rect x="42" y="182" width="7" height="10" opacity=".75"/><rect x="62" y="182" width="7" height="10" opacity=".2"/><rect x="82" y="182" width="7" height="10" opacity=".7"/>
+                <rect x="42" y="206" width="7" height="10" opacity=".2"/><rect x="62" y="206" width="7" height="10" opacity=".6"/><rect x="82" y="206" width="7" height="10" opacity=".2"/>
+                <rect x="112" y="166" width="7" height="10" opacity=".65"/><rect x="128" y="166" width="7" height="10" opacity=".2"/><rect x="112" y="192" width="7" height="10" opacity=".2"/>
+                <rect x="266" y="166" width="7" height="10" opacity=".2"/><rect x="282" y="166" width="7" height="10" opacity=".7"/><rect x="282" y="192" width="7" height="10" opacity=".55"/>
+                <rect x="302" y="182" width="7" height="10" opacity=".2"/><rect x="322" y="182" width="7" height="10" opacity=".8"/><rect x="342" y="206" width="7" height="10" opacity=".6"/><rect x="322" y="206" width="7" height="10" opacity=".2"/>
+              </g>
+            </svg>
+            <figcaption>Le Capitole de San Andreas. Le gouvernement change, les dossiers restent ouverts.</figcaption>
+          </figure>
+        </article>
+
+        <!-- 2024–2025 -->
+        <article class="chapitre" id="ch-phoenix" data-pos="0.85" data-section="Le Projet Phoenix" data-annee="2024 – 2025">
+          <div class="chapitre-texte">
+            <div class="chapitre-tete"><p class="panneau">2024 – 2025</p><button class="ecouter" type="button" data-ecouter-depuis="ch-phoenix"><svg aria-hidden="true"><use href="#i-lire"/></svg>Écouter</button></div>
+            <h3 data-lire data-dire="De 2024 à 2025. Le Projet Phoenix.">Le Projet Phoenix</h3>
+            <p data-lire>Le nouveau gouvernement formalisa le Projet Phoenix, programme de réorganisation administrative et de réponse à la crise. Deux administrations territoriales furent définies, l’une pour le Nord et l’autre pour le Sud, sous un gouvernement central unique. La coordination policière de l’État fut confiée aux San Andreas State Troopers (SASP).</p>
+            <p data-lire>Malgré ces réformes, l’état des infrastructures et la situation sécuritaire de Blaine County ne permirent pas la levée des restrictions d’accès.</p>
+          </div>
+          <figure class="vignette">
+            <svg viewBox="0 0 400 280" role="img" aria-label="Au crépuscule, une barrière ferme la route du Nord, avec un panneau accès restreint et une voiture de patrouille">
+              <defs>
+                <linearGradient id="v9ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A141E"/><stop offset=".55" stop-color="#46262C"/><stop offset=".92" stop-color="#B4562A"/><stop offset="1" stop-color="#D9773A"/></linearGradient>
+                <radialGradient id="v9rouge"><stop offset="0" stop-color="#FF5A4A" stop-opacity=".85"/><stop offset="1" stop-color="#FF5A4A" stop-opacity="0"/></radialGradient>
+                <radialGradient id="v9bleu"><stop offset="0" stop-color="#5A8CFF" stop-opacity=".85"/><stop offset="1" stop-color="#5A8CFF" stop-opacity="0"/></radialGradient>
+              </defs>
+              <rect width="400" height="172" fill="url(#v9ciel)"/>
+              <g fill="#E9DCCB"><circle cx="60" cy="28" r=".9"/><circle cx="140" cy="18" r="1.1"/><circle cx="230" cy="40" r=".8"/><circle cx="330" cy="22" r="1"/><circle cx="372" cy="58" r=".7"/></g>
+              <path d="M0 172v-32l50-10 40-22 34-28 22-14 18 10 26 24 40 20 50 16 60 12 60 6v38z" fill="#2A1A1E"/>
+              <rect y="170" width="400" height="110" fill="#16100E"/>
+              <path d="M70 280 196 170h8l126 110z" fill="#241C19"/>
+              <g fill="#D9B25A" opacity=".45"><path d="M199 178h2l.4 6h-2.8z"/><path d="M198 192h4l.6 9h-5.2z"/></g>
+              <g fill="#0C0807">
+                <rect x="38" y="166" width="4" height="84"/><rect x="112" y="166" width="4" height="84"/>
+                <rect x="126" y="219" width="5" height="28"/><rect x="269" y="219" width="5" height="28"/>
+              </g>
+              <rect x="26" y="116" width="102" height="54" rx="2" fill="#E6DED2" stroke="#B0361F" stroke-width="3"/>
+              <text x="77" y="136" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-weight="800" font-size="12" fill="#8E2A18" letter-spacing=".5">ACCÈS RESTREINT</text>
+              <text x="77" y="150" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-weight="600" font-size="9.5" fill="#2A1E17">Blaine County</text>
+              <text x="77" y="162" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-size="8" fill="#2A1E17">État de San Andreas</text>
+              <rect x="128" y="217" width="146" height="9" fill="url(#barriere)"/>
+              <circle cx="201" cy="215" r="2.5" fill="#FF4A2A"/>
+              <g fill="#EE5D27"><path d="M150 236l-5 12h10z"/><path d="M252 236l-5 12h10z"/></g>
+              <circle cx="330" cy="215" r="30" fill="url(#v9rouge)" opacity=".7"/>
+              <circle cx="350" cy="215" r="30" fill="url(#v9bleu)" opacity=".7"/>
+              <g fill="#0B0807">
+                <path d="M296 254v-10q0-6 6-7l14-3 12-11q4-4 10-4h22q6 0 9 5l6 10 8 2q5 1 5 7v11z"/>
+                <circle cx="314" cy="255" r="8"/><circle cx="362" cy="255" r="8"/>
+              </g>
+              <rect x="329" y="214" width="10" height="4" rx="1" fill="#FF4A3A"/><rect x="341" y="214" width="10" height="4" rx="1" fill="#5A8CFF"/>
+              <path d="M300 242h76" stroke="#E6DED2" stroke-opacity=".35" stroke-width="1.5"/>
+              <g fill="#2A201B"><circle cx="314" cy="255" r="3"/><circle cx="362" cy="255" r="3"/></g>
+            </svg>
+            <figcaption>2025. Les réformes avancent, mais la route du Nord reste barrée.</figcaption>
+          </figure>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SITUATION 2026 ================= -->
+<section class="section" id="situation" data-section="Situation officielle en 2026" data-annee="2026">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2 data-lire>Situation officielle en 2026</h2>
+      <p>Ce que trouve votre personnage en arrivant à San Andreas.</p>
+    </header>
+
+    <div class="territoires-2026">
+      <article class="zone zone--sud">
+        <span class="statut" data-s="actif">Ouvert</span>
+        <h3 data-lire data-dire="Le Sud. Los Santos.">Le Sud</h3>
+        <p class="lieu-sous">Los Santos</p>
+        <p data-lire>Los Santos demeure le principal centre habité, économique et administratif de San Andreas. La ville accueille une partie des familles déplacées du Nord. Le logement, l’emploi et les services publics subissent les effets de cet afflux de population. La vie quotidienne y suit son cours sous l’autorité du gouvernement et des institutions en fonction.</p>
+      </article>
+      <article class="zone zone--nord">
+        <span class="statut" data-s="danger">Fermé au public</span>
+        <h3 data-lire data-dire="Le Nord. Blaine County.">Le Nord</h3>
+        <p class="lieu-sous">Blaine County</p>
+        <p data-lire>Blaine County est fermé au public à l’ouverture de Phoenix. Les routes d’accès sont soumises à des restrictions officielles. Paleto Bay, Sandy Shores, Grapeseed et les secteurs ruraux concernés ne sont pas des zones ouvertes à l’installation, à l’exploitation commerciale ou à la circulation ordinaire des civils. La fermeture est justifiée par la dégradation des infrastructures, les risques persistants pour la sécurité et l’absence de garanties suffisantes pour les résidents.</p>
+        <p data-lire>Les autorités ne publient pas l’ensemble des informations relatives à la situation intérieure. Les témoignages d’anciens habitants, les archives administratives et les récits sur les groupes rebelles sont parfois contradictoires. Le présent récit n’établit aucune date de réouverture.</p>
+      </article>
+    </div>
+
+    <div class="affaire">
+      <div>
+        <span class="statut" data-s="tension">Accusations non tranchées</span>
+        <h3 data-lire>L’affaire Mozzini</h3>
+      </div>
+      <p data-lire>L’ancien gouverneur n’exerce plus le pouvoir. Les soupçons entourant certains marchés publics restent distincts de toute déclaration de culpabilité. Les éléments officiellement connus ne permettent pas de trancher les accusations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CARTE ================= -->
+<section class="section carte" id="territoires">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>La carte en 2026</h2>
+      <p>Au sud, la vie continue. Au nord, les routes s’arrêtent aux restrictions d’accès. Choisissez un lieu pour voir sa situation.</p>
+    </header>
+
+    <div class="carte-grille">
+      <div>
+        <div class="carte-plan" id="plan">
+          <svg viewBox="0 0 400 560" aria-hidden="true">
+            <defs>
+              <pattern id="hachures" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#B0361F" stroke-width="2" opacity=".42"/></pattern>
+              <pattern id="lumieres" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.1" fill="#F5B041"/></pattern>
+              <radialGradient id="fondu"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>
+              <radialGradient id="halo" cx="220" cy="462" r="200" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#EE5D27" stop-opacity=".32"/><stop offset="1" stop-color="#EE5D27" stop-opacity="0"/></radialGradient>
+              <mask id="m-ville"><rect width="400" height="560" fill="#000"/><ellipse cx="222" cy="468" rx="130" ry="88" fill="url(#fondu)"/></mask>
+              <clipPath id="ile"><path d="M150 30C190 18 250 30 290 60c40 30 55 80 45 130-5 40 15 80 10 120-5 50 15 90 0 140-15 50-55 85-115 90-50 5-100-10-125-45-20-30-10-65-25-95-15-30-10-70 5-100 15-30-10-60-15-95-8-45 5-85 25-115 15-30 30-50 55-60z"/></clipPath>
+            </defs>
+            <rect width="400" height="560" fill="url(#halo)"/>
+            <g stroke="#3A2F29" stroke-width="1.2" fill="none" stroke-linecap="round">
+              <path d="M20 160q6-4 12 0t12 0"/><path d="M356 240q6-4 12 0t12 0"/><path d="M28 470q6-4 12 0t12 0"/><path d="M362 520q6-4 12 0t12 0"/><path d="M40 60q6-4 12 0t12 0"/>
+            </g>
+            <path d="M150 30C190 18 250 30 290 60c40 30 55 80 45 130-5 40 15 80 10 120-5 50 15 90 0 140-15 50-55 85-115 90-50 5-100-10-125-45-20-30-10-65-25-95-15-30-10-70 5-100 15-30-10-60-15-95-8-45 5-85 25-115 15-30 30-50 55-60z" fill="#2A221E" stroke="#5A4A40" stroke-width="1.5"/>
+            <g clip-path="url(#ile)">
+              <rect width="400" height="318" fill="url(#hachures)"/>
+              <rect y="318" width="400" height="242" fill="#F5B041" opacity=".05"/>
+              <rect width="400" height="560" fill="url(#lumieres)" mask="url(#m-ville)" opacity=".9"/>
+              <g stroke="#6B5A4E" stroke-width="1.6" fill="none" stroke-linejoin="round"><path d="M160 116l24-34 24 34"/><path d="M196 116l14-20 16 20"/></g>
+              <path d="M190 205c15-15 60-17 78-5 14 10 2 28-23 30-25 2-50-5-55-25z" fill="#1B1512" stroke="#4A3D35"/>
+              <path d="M50 318c100-8 210 8 320-2" stroke="#E8594C" stroke-width="2.2" stroke-dasharray="2 6" stroke-linecap="round" fill="none"/>
+            </g>
+            <path d="M120 80c8 50 25 100 52 134 20 24 50 36 78 36" fill="none" stroke="#6B5A4E" stroke-width="2" stroke-dasharray="3 5"/>
+            <path d="M250 250c12 50 12 110-14 170-6 14-10 22-11 30" fill="none" stroke="#8A7A6C" stroke-width="2.5"/>
+            <text x="300" y="128" text-anchor="middle" font-family="Newsreader, Georgia, serif" font-style="italic" font-size="19" fill="#C9B9A8">Blaine County</text>
+            <text x="300" y="146" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-weight="600" font-size="10.5" fill="#E8594C">fermé au public</text>
+            <text x="104" y="366" font-family="Newsreader, Georgia, serif" font-style="italic" font-size="19" fill="#C9B9A8">Le Sud</text>
+            <text x="104" y="383" font-family="Overpass, Arial, sans-serif" font-size="10.5" fill="#A89A8C">ouvert à la population</text>
+            <text x="60" y="336" font-family="Overpass, Arial, sans-serif" font-size="10" fill="#E8594C">limite d’accès</text>
+            <g transform="translate(366 36)" fill="#A89A8C"><path d="M0-14 5 4 0 0-5 4z"/><text y="18" text-anchor="middle" font-family="Overpass, Arial, sans-serif" font-weight="600" font-size="11">N</text></g>
+          </svg>
+
+          <button class="lieu lieu--nord" type="button" data-lieu="paleto" style="left:30%;top:14.29%" aria-pressed="false"><span class="lieu-nom">Paleto Bay</span></button>
+          <button class="lieu lieu--nord lieu--gauche" type="button" data-lieu="grapeseed" style="left:75%;top:36.6%" aria-pressed="false"><span class="lieu-nom">Grapeseed</span></button>
+          <button class="lieu lieu--nord" type="button" data-lieu="sandy" style="left:62.5%;top:44.64%" aria-pressed="false"><span class="lieu-nom">Sandy Shores</span></button>
+          <button class="lieu lieu--controle" type="button" data-lieu="acces" style="left:64.5%;top:56.79%" aria-pressed="false"><span class="lieu-nom">Accès au Nord</span></button>
+          <button class="lieu" type="button" data-lieu="ls" style="left:56.25%;top:80.36%" aria-pressed="true"><span class="lieu-nom">Los Santos</span></button>
+          <button class="lieu lieu--discret lieu--gauche" type="button" data-lieu="port" style="left:76.25%;top:87.86%" aria-pressed="false"><span class="lieu-nom">Le port</span></button>
+        </div>
+      </div>
+
+      <div>
+        <div class="fiche" id="fiche" data-s="actif" aria-live="polite">
+          <span class="statut" id="fiche-statut" data-s="actif">Ouvert</span>
+          <h3 id="fiche-nom">Los Santos</h3>
+          <p class="devise" id="fiche-devise">Le centre de l’État</p>
+          <p id="fiche-texte">Le principal centre habité, économique et administratif de San Andreas. La ville accueille une partie des familles déplacées du Nord, et le logement, l’emploi et les services publics en subissent les effets.</p>
+          <p class="juridiction" id="fiche-juridiction">Administration territoriale du Sud</p>
+        </div>
+        <div class="legende">
+          <span><i style="background:repeating-linear-gradient(45deg,rgba(176,54,31,.75) 0 2px,transparent 2px 6px)"></i>Fermé au public</span>
+          <span><i style="background:repeating-linear-gradient(90deg,#E8594C 0 3px,transparent 3px 8px);height:3px"></i>Limite d’accès</span>
+          <span><i style="background:radial-gradient(circle,#F5B041 1.2px,transparent 1.6px) 0 0/6px 6px"></i>Zone habitée</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CE QUE SAIT LA POPULATION ================= -->
+<section class="section section--serre" id="population" data-section="Ce que sait la population" data-annee="2026">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2 data-lire>Ce que sait la population</h2>
+      <p>Ce que tout habitant de Los Santos peut raconter, et ce que personne ne sait vraiment.</p>
+    </header>
+
+    <div class="savoir" data-lire data-dire="Les habitants savent que le Nord a subi une crise grave, que les déplacements y sont interdits ou strictement réglementés, que Mozzini n’est plus gouverneur et que les institutions de l’État ont été réorganisées. Ils ne disposent pas d’une connaissance certaine des circonstances de la disparition de Gahllager, de toutes les activités des anciens Rebelles ou des responsabilités dans les affaires de marchés publics.">
+      <div class="savoir-col savoir--su">
+        <h3>Ce que tout le monde sait</h3>
+        <ul>
+          <li>Le Nord a subi une crise grave.</li>
+          <li>Les déplacements y sont interdits ou strictement réglementés.</li>
+          <li>Mozzini n’est plus gouverneur.</li>
+          <li>Les institutions de l’État ont été réorganisées.</li>
+        </ul>
+      </div>
+      <div class="savoir-col savoir--inconnu">
+        <h3>Ce que personne ne sait avec certitude</h3>
+        <ul>
+          <li>Les circonstances de la disparition de Gahllager.</li>
+          <li>Toutes les activités des anciens Rebelles.</li>
+          <li>Les responsabilités dans les affaires de marchés publics.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fin-recit" data-section="État des lieux" data-annee="Fin du récit officiel">
+      <h3 data-lire data-dire="État des lieux.">État des lieux</h3>
+      <p data-lire>San Andreas vit avec les conséquences de sa fracture. Los Santos concentre la vie publique et économique. Le Nord reste derrière les restrictions d’accès. Un nouveau gouvernement exerce le pouvoir et le Projet Phoenix fait partie du cadre institutionnel de l’État. Le récit officiel s’arrête ici, sans annoncer les événements futurs ni déterminer les décisions des personnages.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSTITUTIONS ================= -->
+<section class="section" id="institutions">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>Institutions en fonction</h2>
+      <p>Un gouvernement central, deux administrations territoriales, une police d’État et une justice indépendante.</p>
+    </header>
+
+    <div class="organigramme">
+      <article class="org org-gouv">
+        <p class="org-type">Pouvoir exécutif</p>
+        <h3>Gouvernement de San Andreas</h3>
+        <p>Le gouverneur dirige l’exécutif de l’État, assisté du lieutenant-gouverneur et d’un cabinet chargé des départements publics. L’État conserve une autorité centrale sur les deux territoires, y compris sur Blaine County malgré sa fermeture.</p>
+      </article>
+      <article class="org org-nord">
+        <p class="org-type">Administration territoriale</p>
+        <h3>Le Nord</h3>
+        <span class="statut" data-s="tension">Services limités</span>
+        <p>Un sénateur territorial administre la juridiction selon la Charte Phoenix. La fermeture du Nord limite l’exercice ordinaire de ses services sur place, sans supprimer son existence administrative.</p>
+      </article>
+      <article class="org org-sud">
+        <p class="org-type">Administration territoriale</p>
+        <h3>Le Sud</h3>
+        <span class="statut" data-s="actif">En fonction</span>
+        <p>Un sénateur territorial administre la juridiction selon la Charte Phoenix.</p>
+      </article>
+      <article class="org org-sasp">
+        <p class="org-type">Police d’État</p>
+        <h3>San Andreas State Troopers</h3>
+        <p>Les SASP constituent la police d’État compétente à l’échelle de San Andreas. Leur mission comprend l’application des restrictions d’accès au Nord dans le cadre légal fixé par les autorités.</p>
+      </article>
+      <article class="org org-justice">
+        <p class="org-type">Justice indépendante</p>
+        <h3>La justice</h3>
+        <p>La justice demeure indépendante de l’exécutif. Les enquêtes et décisions judiciaires relèvent des organes compétents.</p>
+      </article>
+    </div>
+
+    <p class="note-institutions">Dans cet univers RP, le titre de sénateur territorial désigne une fonction administrative spécifique, et non le rôle traditionnel d’un sénateur fédéral américain.</p>
+  </div>
+</section>
+
+<!-- ================= PERSONNAGES ================= -->
+<section class="section section--serre" id="personnages">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>Personnages historiques</h2>
+      <p>Ils ont marqué la crise et la réorganisation de l’État.</p>
+    </header>
+
+    <div class="archives">
+      <article class="archive">
+        <span class="onglet">Ancien gouverneur</span>
+        <h3>Simone Mozzini</h3>
+        <span class="statut" data-s="vacant">Responsabilité non établie</span>
+        <p>Ancien gouverneur de San Andreas. Son administration fut au cœur des controverses liées au déclin du Nord. Il a quitté ses fonctions en 2024. Son éventuelle responsabilité pénale n’est pas établie.</p>
+      </article>
+      <article class="archive">
+        <span class="onglet">Disparu en 2019</span>
+        <h3>Shérif Gahllager</h3>
+        <span class="statut" data-s="tension">Circonstances inconnues</span>
+        <p>Ancien responsable de l’ordre public à Blaine County, disparu en 2019. Les circonstances de sa disparition restent inconnues.</p>
+      </article>
+      <article class="archive">
+        <span class="onglet">Projet Phoenix</span>
+        <h3>Eleanor Whitmore</h3>
+        <span class="statut" data-s="vacant">Personnage historique</span>
+        <p>Figure administrative associée à la formalisation du Projet Phoenix et à la transition institutionnelle.</p>
+      </article>
+      <article class="archive">
+        <span class="onglet">Police d’État</span>
+        <h3>Daniel Mercer</h3>
+        <span class="statut" data-s="vacant">Personnage historique</span>
+        <p>Responsable associé à la réorganisation initiale de la police d’État.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHRONOLOGIE ================= -->
+<section class="section section--serre" id="chronologie">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>Chronologie de référence</h2>
+      <p>Les dates du canon Phoenix.</p>
+    </header>
+    <ol class="chrono">
+      <li><span class="an">2016</span><span class="evt">Accélération du déclin économique de Blaine County.</span></li>
+      <li><span class="an">2018</span><span class="evt">Annonce d’un plan de soutien partiellement inachevé.</span></li>
+      <li><span class="an">2019</span><span class="evt">Disparition du shérif Gahllager.</span></li>
+      <li><span class="an">2020–2022</span><span class="evt">Montée des groupes rebelles et exode vers Los Santos.</span></li>
+      <li><span class="an">2023</span><span class="evt">Début des controverses publiques autour des contrats de l’administration Mozzini.</span></li>
+      <li><span class="an">2024</span><span class="evt">Départ de Simone Mozzini et prise de fonction d’un nouveau gouvernement.</span></li>
+      <li><span class="an">2024–2025</span><span class="evt">Formalisation du Projet Phoenix et réorganisation des institutions.</span></li>
+      <li class="maintenant"><span class="an">2026</span><span class="evt">Los Santos fonctionne&nbsp;; Blaine County demeure fermé au public.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= REJOINDRE ================= -->
+<section class="section rejoindre" id="rejoindre">
+  <div class="enveloppe">
+    <header class="section-tete">
+      <h2>Votre histoire commence à Los&nbsp;Santos</h2>
+      <p>En 2026, Los Santos concentre la vie publique et économique de San Andreas. Quelques pistes pour y écrire votre personnage.</p>
+    </header>
+
+    <ul class="idees">
+      <li class="idee">
+        <h3>Famille déplacée</h3>
+        <p>Votre famille a quitté Paleto Bay, Sandy Shores ou les zones rurales. Los Santos vous a accueillis, sans tout vous offrir.</p>
+      </li>
+      <li class="idee">
+        <h3>Servir l’État</h3>
+        <p>Gouvernement, administrations territoriales, SASP, justice&nbsp;: des institutions en fonction, et une confiance à regagner.</p>
+      </li>
+      <li class="idee">
+        <h3>Chercher la vérité</h3>
+        <p>La disparition de Gahllager, les anciens Rebelles, les marchés publics&nbsp;: la population n’en sait pas tout.</p>
+      </li>
+      <li class="idee">
+        <h3>Vivre en ville</h3>
+        <p>Logement, emploi, services publics&nbsp;: la métropole absorbe l’afflux de population, avec ses opportunités et ses tensions.</p>
+      </li>
+    </ul>
+
+    <div class="depart">
+      <div>
+        <h3>San Andreas vous attend.</h3>
+        <p>Les annonces, le règlement et toutes les infos pour vous lancer sont sur le Discord du serveur.</p>
+      </div>
+      <!-- Remplacer href="#" par le lien d'invitation Discord du serveur -->
+      <a class="btn btn-braise" href="#" id="lien-discord">Rejoindre le Discord</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="enveloppe">
+    <span><strong>Phoenix</strong>, serveur FiveM. Lore officiel, version 4.0.</span>
+    <span>Projet communautaire indépendant, non affilié à Rockstar Games ni à Take-Two Interactive.</span>
+  </div>
+</footer>
+
+<!-- ================= LECTEUR DU NARRATEUR ================= -->
+<div class="lecteur" id="lecteur" role="region" aria-label="Narration du récit" hidden>
+  <div class="lecteur-info">
+    <svg aria-hidden="true"><use href="#logo"/></svg>
+    <div class="lecteur-textes" aria-live="polite">
+      <span class="lecteur-annee" id="l-annee">Prologue</span>
+      <span class="lecteur-section" id="l-section">Phoenix</span>
+    </div>
+  </div>
+  <div class="lecteur-commandes">
+    <button type="button" id="l-prec" aria-label="Passage précédent"><svg aria-hidden="true"><use href="#i-prec"/></svg></button>
+    <button type="button" id="l-lecture" class="l-principal" aria-label="Mettre en pause"><svg aria-hidden="true"><use id="l-icone" href="#i-pause"/></svg></button>
+    <button type="button" id="l-suiv" aria-label="Passage suivant"><svg aria-hidden="true"><use href="#i-suiv"/></svg></button>
+    <button type="button" id="l-stop" aria-label="Arrêter la narration"><svg aria-hidden="true"><use href="#i-stop"/></svg></button>
+  </div>
+  <div class="lecteur-options">
+    <label for="l-voix">Voix du narrateur <select id="l-voix"></select></label>
+    <label for="l-suivre"><input type="checkbox" id="l-suivre" checked> Suivre le texte</label>
+  </div>
+  <div class="lecteur-barre" aria-hidden="true"><span id="l-barre"></span></div>
+  <p class="lecteur-message" id="l-message" hidden></p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduit = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Braises du hero ---------- */
+  var cv = document.getElementById("braises");
+  var cx = cv.getContext && cv.getContext("2d");
+  if (cx) {
+    var W = 0, H = 0, parts = [], visible = true, raf = 0;
+    var sprite = function(c1, c2){
+      var s = document.createElement("canvas"); s.width = s.height = 64;
+      var g = s.getContext("2d"), r = g.createRadialGradient(32,32,0,32,32,32);
+      r.addColorStop(0, "rgba(255,240,200,1)"); r.addColorStop(.16, c1); r.addColorStop(.45, c2); r.addColorStop(1, "rgba(238,93,39,0)");
+      g.fillStyle = r; g.fillRect(0,0,64,64); return s;
+    };
+    var sprites = [sprite("rgba(245,176,65,.95)","rgba(238,93,39,.28)"), sprite("rgba(238,93,39,.95)","rgba(176,54,31,.25)")];
+    var nouvelle = function(init){
+      var max = 260 + Math.random()*460;
+      return { x: Math.random()*W, y: init ? H*(.25+Math.random()*.8) : H + 10,
+        r: .8 + Math.random()*2.4, vy: .25 + Math.random()*1.05,
+        a: Math.random()*6.28, va: .008 + Math.random()*.03, amp: .2 + Math.random()*.8,
+        vie: init ? Math.random()*max*.8 : 0, max: max, s: Math.random() < .4 ? 1 : 0 };
+    };
+    var taille = function(){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2), r = cv.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+      cx.setTransform(dpr,0,0,dpr,0,0);
+      var n = Math.round(Math.min(150, Math.max(40, W/9)));
+      parts = []; for (var i=0;i<n;i++) parts.push(nouvelle(true));
+    };
+    var dessiner = function(avancer){
+      cx.clearRect(0,0,W,H);
+      cx.globalCompositeOperation = "lighter";
+      for (var i=0;i<parts.length;i++){
+        var p = parts[i];
+        if (avancer){ p.vie++; p.y -= p.vy; p.a += p.va; p.x += Math.sin(p.a)*p.amp + .12; }
+        var t = p.vie/p.max;
+        if (t >= 1 || p.y < -20 || p.x > W + 20){ parts[i] = nouvelle(false); continue; }
+        var al = t < .12 ? t/.12 : 1 - (t-.12)/.88;
+        al *= .7 + .3*Math.sin(p.vie*.25 + p.a);
+        al *= Math.min(1, Math.max(0, p.y/(H*.75)) + .15);
+        if (al <= 0) continue;
+        var d = p.r*7;
+        cx.globalAlpha = Math.min(1, al);
+        cx.drawImage(sprites[p.s], p.x - d/2, p.y - d/2, d, d);
+      }
+      cx.globalAlpha = 1;
+    };
+    var boucle = function(){ dessiner(true); raf = visible ? requestAnimationFrame(boucle) : 0; };
+    taille();
+    if (reduit){ dessiner(false); }
+    else {
+      raf = requestAnimationFrame(boucle);
+      if ("IntersectionObserver" in window){
+        new IntersectionObserver(function(e){
+          visible = e[0].isIntersecting;
+          if (visible && !raf) raf = requestAnimationFrame(boucle);
+        }).observe(cv);
+      }
+    }
+    var to; window.addEventListener("resize", function(){ clearTimeout(to); to = setTimeout(function(){ taille(); if (reduit) dessiner(false); }, 150); });
+  }
+
+  /* ---------- Rail des années ---------- */
+  var rail = document.getElementById("rail");
+  var chapitres = [].slice.call(document.querySelectorAll(".chapitre"));
+  var etapes = [].slice.call(document.querySelectorAll(".rail-etapes li"));
+  var barre = document.getElementById("progression");
+  var attente = false;
+  function maj(){
+    attente = false;
+    var mid = window.innerHeight * .45, pos = 0;
+    for (var i=0;i<chapitres.length;i++){
+      var r = chapitres[i].getBoundingClientRect();
+      if (r.top <= mid){
+        var f = Math.max(0, Math.min(1, (mid - r.top)/r.height));
+        var a = parseFloat(chapitres[i].dataset.pos);
+        var b = i+1 < chapitres.length ? parseFloat(chapitres[i+1].dataset.pos) : 1;
+        pos = a + (b-a)*f;
+      }
+    }
+    rail.style.setProperty("--p", (pos*100).toFixed(2) + "%");
+    var actif = 0;
+    etapes.forEach(function(li, k){ if (pos >= parseFloat(li.dataset.at) - .02) actif = k; });
+    etapes.forEach(function(li, k){ li.classList.toggle("actif", k === actif); });
+    var pp = Math.max(0, Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)));
+    barre.style.setProperty("--pp", (pp*100).toFixed(2) + "%");
+  }
+  window.addEventListener("scroll", function(){ if (!attente){ attente = true; requestAnimationFrame(maj); } }, { passive: true });
+  window.addEventListener("resize", maj);
+  maj();
+
+  /* ---------- Carte ---------- */
+  var LIEUX = {
+    paleto: { nom: "Paleto Bay", devise: "La pêche, autrefois", statut: "Fermé au public", s: "danger", jur: "Administration territoriale du Nord",
+      texte: "La ville vivait de la pêche. De nombreuses familles l’ont quittée pendant les années sombres. En 2026, elle n’est ouverte ni à l’installation, ni à l’exploitation commerciale, ni à la circulation ordinaire des civils." },
+    grapeseed: { nom: "Grapeseed", devise: "Le cœur agricole du Nord", statut: "Fermé au public", s: "danger", jur: "Administration territoriale du Nord",
+      texte: "Blaine County comptait sur son agriculture. Comme le reste du Nord, le secteur est fermé au public en 2026." },
+    sandy: { nom: "Sandy Shores", devise: "Commerce local et ateliers", statut: "Fermé au public", s: "danger", jur: "Administration territoriale du Nord",
+      texte: "Commerce local et ateliers faisaient vivre Sandy Shores. Ses habitants ont fui vers Los Santos pendant les années sombres. Le secteur est fermé au public en 2026." },
+    acces: { nom: "Accès au Nord", devise: "Sous restrictions officielles", statut: "Accès restreint", s: "tension", jur: "San Andreas State Troopers",
+      texte: "Les routes d’accès à Blaine County sont soumises à des restrictions officielles. Les SASP sont chargés de les faire appliquer, dans le cadre légal fixé par les autorités. Aucune date de réouverture n’est établie." },
+    ls: { nom: "Los Santos", devise: "Le centre de l’État", statut: "Ouvert", s: "actif", jur: "Administration territoriale du Sud",
+      texte: "Le principal centre habité, économique et administratif de San Andreas. La ville accueille une partie des familles déplacées du Nord, et le logement, l’emploi et les services publics en subissent les effets." },
+    port: { nom: "Le port", devise: "Le cœur économique du Sud", statut: "En activité", s: "actif", jur: "Administration territoriale du Sud",
+      texte: "C’est autour de lui que Los Santos s’est développée, avec la finance, les services et de grands groupes industriels." }
+  };
+  var boutons = [].slice.call(document.querySelectorAll(".lieu"));
+  var fiche = document.getElementById("fiche");
+  var champs = { statut: "fiche-statut", nom: "fiche-nom", devise: "fiche-devise", texte: "fiche-texte", jur: "fiche-juridiction" };
+  Object.keys(champs).forEach(function(k){ champs[k] = document.getElementById(champs[k]); });
+  boutons.forEach(function(b){
+    b.addEventListener("click", function(){
+      var l = LIEUX[b.dataset.lieu]; if (!l) return;
+      boutons.forEach(function(o){ o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      fiche.dataset.s = l.s; champs.statut.dataset.s = l.s;
+      champs.statut.textContent = l.statut; champs.nom.textContent = l.nom;
+      champs.devise.textContent = l.devise; champs.texte.textContent = l.texte; champs.jur.textContent = l.jur;
+    });
+  });
+
+  /* ---------- Lien Discord non renseigné ---------- */
+  var discord = document.getElementById("lien-discord");
+  if (discord && discord.getAttribute("href") === "#") {
+    discord.addEventListener("click", function(e){ e.preventDefault(); });
+  }
+
+  /* =========================================================
+     Narrateur : synthèse vocale du navigateur, phrase par phrase
+     ========================================================= */
+  var synth = window.speechSynthesis;
+  var Enonce = window.SpeechSynthesisUtterance;
+  var supporte = !!(synth && Enonce);
+
+  var lecteur = document.getElementById("lecteur");
+  var lAnnee = document.getElementById("l-annee");
+  var lSection = document.getElementById("l-section");
+  var lLecture = document.getElementById("l-lecture");
+  var lIcone = document.getElementById("l-icone");
+  var lVoix = document.getElementById("l-voix");
+  var lSuivre = document.getElementById("l-suivre");
+  var lBarre = document.getElementById("l-barre");
+  var lMessage = document.getElementById("l-message");
+  var boutonEcoute = document.getElementById("ecoute");
+  var texteEcoute = document.getElementById("ecoute-texte");
+
+  /* Découpe un texte en phrases (sans lookbehind, pour les anciens navigateurs) */
+  function decouper(t){
+    var out = [], re = /[.!?…]+[»"]?\s+(?=[«A-ZÀ-ÖØ-Þ0-9])/g, last = 0, m;
+    while ((m = re.exec(t))) { out.push(t.slice(last, m.index + m[0].length).trim()); last = m.index + m[0].length; }
+    if (last < t.length) out.push(t.slice(last).trim());
+    return out.filter(Boolean);
+  }
+
+  /* Construit la file de lecture à partir des éléments [data-lire] */
+  var file = [];
+  [].slice.call(document.querySelectorAll("[data-lire]")).forEach(function(el){
+    var temoin = !!el.closest("[data-voix='temoin']");
+    var sec = el.closest("[data-section]");
+    var info = { voix: temoin ? "temoin" : "narrateur", section: sec ? sec.dataset.section : "", annee: sec ? (sec.dataset.annee || "") : "", racine: sec };
+    var texte = el.textContent.replace(/\s+/g, " ").trim();
+    var sansEnfants = el.children.length === 0;
+    if (el.dataset.dire) {
+      var span = null;
+      if (sansEnfants) { span = document.createElement("span"); span.className = "phrase"; span.textContent = el.textContent; el.textContent = ""; el.appendChild(span); }
+      file.push(Object.assign({ el: el, span: span, texte: el.dataset.dire }, info));
+      return;
+    }
+    if (sansEnfants) {
+      var phrases = decouper(texte);
+      el.textContent = "";
+      phrases.forEach(function(p, i){
+        var s = document.createElement("span"); s.className = "phrase"; s.textContent = p;
+        el.appendChild(s);
+        if (i < phrases.length - 1) el.appendChild(document.createTextNode(" "));
+        file.push(Object.assign({ el: el, span: s, texte: p }, info));
+      });
+    } else {
+      file.push(Object.assign({ el: el, span: null, texte: texte }, info));
+    }
+  });
+
+  /* Prononciation : sigles, dates, guillemets */
+  function prononcer(t){
+    return t.replace(/[«»"]/g, "")
+      .replace(/(\d{4})\s*[–-]\s*(\d{4})/g, "$1 à $2")
+      .replace(/\s*\(SASP\)/g, "")
+      .replace(/\bSASP\b/g, "S.A.S.P.")
+      .replace(/\bUS Marshals\b/g, "U.S. Marshals")
+      .replace(/ /g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  var idx = 0, etat = "arret", generation = 0, minuterie = 0;
+  var voixNarr = null, voixTemoin = null, toutesVoix = [];
+  var precedent = null;
+
+  function score(v){
+    var n = v.name || "", s = 0;
+    if (/^fr[-_]FR/i.test(v.lang)) s += 6; else if (/^fr/i.test(v.lang)) s += 3;
+    if (/Natural|Naturel|Neural|Online/i.test(n)) s += 20;
+    if (/Google/i.test(n)) s += 8;
+    if (/Henri|R[ée]my|Thomas|Paul|Antoine|Jean|Daniel|Fabrice|Male|Homme/i.test(n)) s += 5;
+    return s;
+  }
+  function choisirTemoin(){
+    var autres = toutesVoix.filter(function(v){ return v !== voixNarr; });
+    voixTemoin = autres.length ? autres[0] : voixNarr;
+  }
+  function chargerVoix(){
+    if (!supporte) return;
+    var liste = synth.getVoices().filter(function(v){ return /^fr/i.test(v.lang); });
+    if (!liste.length) return;
+    liste.sort(function(a, b){ return score(b) - score(a); });
+    toutesVoix = liste;
+    var memo = null;
+    try { memo = localStorage.getItem("phoenix-voix"); } catch (e) {}
+    var actuel = voixNarr ? voixNarr.name : memo;
+    lVoix.innerHTML = "";
+    liste.forEach(function(v){
+      var o = document.createElement("option");
+      o.value = v.name; o.textContent = v.name.replace(/^Microsoft\s+/, "").replace(/\s*-\s*French.*$/i, "") + " (" + v.lang + ")";
+      lVoix.appendChild(o);
+    });
+    voixNarr = liste.filter(function(v){ return v.name === actuel; })[0] || liste[0];
+    lVoix.value = voixNarr.name;
+    choisirTemoin();
+  }
+  if (supporte) {
+    chargerVoix();
+    if (synth.addEventListener) synth.addEventListener("voiceschanged", chargerVoix);
+    else synth.onvoiceschanged = chargerVoix;
+    try { synth.cancel(); } catch (e) {}
+  }
+
+  function message(t){ lMessage.textContent = t || ""; lMessage.hidden = !t; }
+  function majBoutons(){
+    var lit = etat === "lecture";
+    lIcone.setAttribute("href", lit ? "#i-pause" : "#i-lire");
+    lLecture.setAttribute("aria-label", lit ? "Mettre en pause" : (etat === "fin" ? "Réécouter le récit" : "Reprendre la lecture"));
+    boutonEcoute.setAttribute("aria-pressed", lit ? "true" : "false");
+    texteEcoute.textContent = lit ? "Mettre en pause" : (etat === "pause" ? "Reprendre le récit" : "Écouter le récit");
+  }
+  function nettoyer(){
+    [].slice.call(document.querySelectorAll(".en-lecture,.phrase-active,.bloc-actif")).forEach(function(n){ n.classList.remove("en-lecture","phrase-active","bloc-actif"); });
+    precedent = null;
+  }
+  function marquer(item){
+    if (precedent && precedent.el !== item.el) { precedent.el.classList.remove("en-lecture","bloc-actif"); }
+    if (precedent && precedent.span) precedent.span.classList.remove("phrase-active");
+    item.el.classList.add("en-lecture");
+    if (item.span) item.span.classList.add("phrase-active"); else item.el.classList.add("bloc-actif");
+    if (lSuivre.checked && (!precedent || precedent.el !== item.el)) {
+      try { item.el.scrollIntoView({ block: "center", behavior: reduit ? "auto" : "smooth" }); } catch (e) { item.el.scrollIntoView(); }
+    }
+    lAnnee.textContent = item.annee; lSection.textContent = item.section;
+    lBarre.style.setProperty("--lp", ((idx + 1) / file.length * 100).toFixed(1) + "%");
+    precedent = item;
+  }
+  function pauseApres(item, suivant){
+    if (!suivant) return 0;
+    if (suivant.el === item.el) return 140;
+    if (suivant.racine !== item.racine) return 1100;
+    if (/^H[1-4]$/.test(suivant.el.tagName) || /^H[1-4]$/.test(item.el.tagName)) return 700;
+    return 450;
+  }
+  function lire(i){
+    clearTimeout(minuterie);
+    if (i >= file.length) { terminer(); return; }
+    idx = i;
+    var item = file[i];
+    marquer(item);
+    var u = new Enonce(prononcer(item.texte));
+    u.lang = "fr-FR";
+    var temoin = item.voix === "temoin";
+    var v = temoin ? voixTemoin : voixNarr;
+    if (v) u.voice = v;
+    u.rate = temoin ? .94 : .96;
+    u.pitch = temoin ? (voixTemoin === voixNarr ? 1.15 : 1) : .95;
+    var jeton = ++generation;
+    u.onend = function(){
+      if (jeton !== generation || etat !== "lecture") return;
+      minuterie = setTimeout(function(){ if (jeton === generation && etat === "lecture") lire(idx + 1); }, pauseApres(item, file[idx + 1]));
+    };
+    u.onerror = function(e){
+      if (jeton !== generation) return;
+      if (e && (e.error === "interrupted" || e.error === "canceled")) return;
+      etat = "pause"; majBoutons();
+      message("La voix n’a pas pu lire ce passage. Essayez une autre voix dans la liste, puis relancez la lecture.");
+    };
+    try { synth.speak(u); } catch (err) { u.onerror({ error: "synthesis-failed" }); }
+  }
+  function demarrer(depuis){
+    lecteur.hidden = false;
+    document.body.classList.add("narration");
+    if (!supporte) { message("La narration vocale n’est pas disponible dans ce navigateur. Essayez Chrome, Edge ou Safari."); return; }
+    if (!toutesVoix.length) chargerVoix();
+    if (!toutesVoix.length && synth.getVoices().length) { message("Aucune voix française n’est installée sur cet appareil. La lecture utilisera la voix par défaut."); }
+    else message("");
+    generation++; clearTimeout(minuterie);
+    try { synth.cancel(); } catch (e) {}
+    etat = "lecture"; majBoutons();
+    lire(depuis || 0);
+  }
+  function pause(){
+    etat = "pause"; generation++; clearTimeout(minuterie);
+    try { synth.cancel(); } catch (e) {}
+    majBoutons();
+  }
+  function reprendre(){
+    etat = "lecture"; majBoutons(); message("");
+    lire(idx);
+  }
+  function arreter(){
+    etat = "arret"; generation++; clearTimeout(minuterie);
+    try { synth.cancel(); } catch (e) {}
+    nettoyer(); message("");
+    document.body.classList.remove("narration");
+    lecteur.hidden = true; majBoutons();
+  }
+  function terminer(){
+    etat = "fin"; generation++;
+    majBoutons();
+    message("Fin du récit officiel.");
+  }
+  function debutSection(i){
+    var r = file[i] && file[i].racine, k = i;
+    while (k > 0 && file[k - 1].racine === r) k--;
+    return k;
+  }
+  function sauter(sens){
+    if (!file.length) return;
+    var debut = debutSection(idx), cible;
+    if (sens < 0) {
+      cible = (idx - debut > 1) ? debut : (debut > 0 ? debutSection(debut - 1) : 0);
+    } else {
+      cible = idx; while (cible < file.length && file[cible].racine === file[idx].racine) cible++;
+      if (cible >= file.length) { terminer(); return; }
+    }
+    nettoyer();
+    if (etat === "lecture") { generation++; try { synth.cancel(); } catch (e) {} lire(cible); }
+    else { idx = cible; marquer(file[cible]); }
+  }
+  function indexDepuis(id){
+    var cible = document.getElementById(id);
+    if (!cible) return 0;
+    for (var i = 0; i < file.length; i++) if (cible.contains(file[i].el)) return i;
+    return 0;
+  }
+
+  boutonEcoute.addEventListener("click", function(){
+    if (etat === "lecture") pause();
+    else if (etat === "pause") reprendre();
+    else demarrer(0);
+  });
+  [].slice.call(document.querySelectorAll("[data-ecouter-depuis]")).forEach(function(b){
+    b.addEventListener("click", function(){ nettoyer(); demarrer(indexDepuis(b.dataset.ecouterDepuis)); });
+  });
+  lLecture.addEventListener("click", function(){
+    if (etat === "lecture") pause();
+    else if (etat === "fin") { nettoyer(); demarrer(0); }
+    else reprendre();
+  });
+  document.getElementById("l-prec").addEventListener("click", function(){ sauter(-1); });
+  document.getElementById("l-suiv").addEventListener("click", function(){ sauter(1); });
+  document.getElementById("l-stop").addEventListener("click", arreter);
+  lVoix.addEventListener("change", function(){
+    var v = toutesVoix.filter(function(x){ return x.name === lVoix.value; })[0];
+    if (!v) return;
+    voixNarr = v; choisirTemoin();
+    try { localStorage.setItem("phoenix-voix", v.name); } catch (e) {}
+    if (etat === "lecture") { generation++; try { synth.cancel(); } catch (e) {} lire(idx); }
+  });
+  window.addEventListener("pagehide", function(){ if (supporte) try { synth.cancel(); } catch (e) {} });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && etat !== "arret") arreter(); });
+  majBoutons();
+})();
+</script>
+</body>
+</html>

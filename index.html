@@ -392,6 +392,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
 .lecteur-options label{display:inline-flex;align-items:center;gap:.5rem}
 .lecteur-options input{accent-color:var(--braise);width:15px;height:15px;margin:0}
 .lecteur-temps{font-weight:600;color:var(--os);font-variant-numeric:tabular-nums}
+.lecteur-options input[type=range]{width:110px;height:auto}
 .lecteur-barre{grid-column:1 / -1;height:3px;border-radius:2px;background:rgba(236,227,215,.12);overflow:hidden}
 .lecteur-barre span{display:block;height:100%;width:var(--lp,0%);background:linear-gradient(90deg,var(--braise),var(--flamme));transition:width .4s}
 .lecteur-message{grid-column:1 / -1;margin:0;font:400 .88rem/1.45 var(--font-signal);color:var(--flamme)}
@@ -1125,7 +1126,8 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
     <button type="button" id="l-stop" aria-label="Arrêter la narration"><svg aria-hidden="true"><use href="#i-stop"/></svg></button>
   </div>
   <div class="lecteur-options">
-    <span class="lecteur-temps" id="l-temps">0:00 sur 5:40</span>
+    <span class="lecteur-temps" id="l-temps">0:00 sur 5:51</span>
+    <label for="l-volume">Volume <input type="range" id="l-volume" min="0" max="1" step="0.05" value="0.85"></label>
     <label for="l-suivre"><input type="checkbox" id="l-suivre" checked> Suivre le texte</label>
   </div>
   <div class="lecteur-barre" aria-hidden="true"><span id="l-barre"></span></div>
@@ -1265,7 +1267,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
      Narrateur : voix off enregistrée (narration.mp3), surlignage phrase par phrase
      ========================================================= */
   var audio = document.getElementById("narration");
-  var TEMPS = [[0.35, 2.81], [3.56, 5.71], [6.01, 8.18], [9.53, 10.62], [11.37, 18.24], [18.54, 26.44], [27.04, 31.74], [32.04, 36.34], [36.94, 41.44], [41.74, 46.45], [46.75, 50.14], [51.49, 53.47], [54.22, 59.94], [60.24, 68.46], [68.76, 73.66], [75.01, 77.39], [78.14, 82.02], [82.32, 86.33], [86.63, 90.02], [90.62, 96.59], [97.19, 101.04], [102.39, 104.55], [105.3, 110.22], [110.52, 115.18], [115.78, 118.52], [119.12, 125.07], [125.37, 131.13], [131.73, 134.78], [136.13, 138.25], [139.0, 145.4], [145.7, 151.16], [151.46, 153.13], [153.43, 157.81], [159.16, 161.71], [162.46, 165.88], [166.18, 175.03], [175.33, 179.71], [181.06, 183.76], [184.51, 190.73], [191.03, 198.42], [198.72, 202.34], [202.94, 209.88], [211.23, 213.34], [214.09, 215.69], [216.44, 221.47], [221.77, 224.59], [224.89, 229.71], [230.01, 234.37], [235.12, 236.8], [237.55, 240.33], [240.63, 243.4], [243.7, 253.8], [254.1, 262.36], [262.96, 267.34], [267.64, 273.65], [273.95, 276.94], [277.69, 278.67], [279.42, 281.82], [282.12, 286.92], [287.22, 290.81], [292.16, 293.56], [294.31, 316.15], [317.5, 318.23], [318.98, 322.03], [322.33, 325.03], [325.33, 327.73], [328.03, 333.16], [333.46, 339.0]];
+  var TEMPS = [[5.0, 7.46], [8.21, 10.36], [10.66, 12.83], [14.18, 15.27], [16.02, 22.89], [23.19, 31.09], [31.69, 36.39], [36.69, 40.99], [41.59, 46.09], [46.39, 51.1], [51.4, 54.79], [56.14, 58.12], [58.87, 64.59], [64.89, 73.11], [73.41, 78.31], [79.66, 82.04], [82.79, 86.67], [86.97, 90.98], [91.28, 94.67], [95.27, 101.24], [101.84, 105.69], [107.04, 109.2], [109.95, 114.87], [115.17, 119.83], [120.43, 123.17], [123.77, 129.72], [130.02, 135.78], [136.38, 139.43], [140.78, 142.9], [143.65, 150.05], [150.35, 155.81], [156.11, 157.78], [158.08, 162.46], [163.81, 166.36], [167.11, 170.53], [170.83, 179.68], [179.98, 184.36], [185.71, 188.41], [189.16, 195.38], [195.68, 203.07], [203.37, 206.99], [207.59, 214.53], [215.88, 217.99], [218.74, 220.34], [221.09, 226.12], [226.42, 229.24], [229.54, 234.36], [234.66, 239.02], [239.77, 241.45], [242.2, 244.98], [245.28, 248.05], [248.35, 258.45], [258.75, 267.01], [267.61, 271.99], [272.29, 278.3], [278.6, 281.59], [282.34, 283.32], [284.07, 286.47], [286.77, 291.57], [291.87, 295.46], [296.81, 298.21], [298.96, 320.8], [322.15, 322.88], [323.63, 326.68], [326.98, 329.68], [329.98, 332.38], [332.68, 337.81], [338.11, 343.65]];
 
   var lecteur = document.getElementById("lecteur");
   var lAnnee = document.getElementById("l-annee");
@@ -1276,6 +1278,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
   var lBarre = document.getElementById("l-barre");
   var lTemps = document.getElementById("l-temps");
   var lMessage = document.getElementById("l-message");
+  var lVolume = document.getElementById("l-volume");
   var boutonEcoute = document.getElementById("ecoute");
   var texteEcoute = document.getElementById("ecoute-texte");
 
@@ -1313,7 +1316,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
       file.push(Object.assign({ el: el, span: null }, info));
     }
   });
-  var DUREE = TEMPS.length ? TEMPS[TEMPS.length - 1][1] + .8 : 0;
+  var DUREE = 351.6;
   var synchroOk = file.length === TEMPS.length;
 
   var idx = 0, etat = "arret", raf = 0, cible = null, precedent = null;
@@ -1363,7 +1366,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
     if (etat === "lecture") raf = requestAnimationFrame(suivi);
   }
   function placer(i){
-    cible = Math.max(0, TEMPS[i][0] - .08);
+    cible = i === 0 ? 0 : Math.max(0, TEMPS[i][0] - .08);  /* depuis le début : on garde l’intro musicale */
     try {
       if (audio.readyState >= 1) audio.currentTime = cible;
       else audio.addEventListener("loadedmetadata", function(){ try { audio.currentTime = cible === null ? audio.currentTime : cible; } catch (e) {} }, { once: true });
@@ -1449,6 +1452,12 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
   document.getElementById("l-suiv").addEventListener("click", function(){ sauter(1); });
   document.getElementById("l-stop").addEventListener("click", arreter);
   document.addEventListener("keydown", function(e){ if (e.key === "Escape" && etat !== "arret") arreter(); });
+  try { var vMemo = localStorage.getItem("phoenix-volume"); if (vMemo !== null) lVolume.value = vMemo; } catch (e) {}
+  audio.volume = parseFloat(lVolume.value);
+  lVolume.addEventListener("input", function(){
+    audio.volume = parseFloat(lVolume.value);
+    try { localStorage.setItem("phoenix-volume", lVolume.value); } catch (e) {}
+  });
   majTemps(0);
   majBoutons();
 })();

@@ -390,11 +390,8 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
 .lecteur-commandes .l-principal svg{width:17px;height:17px}
 .lecteur-options{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.4rem;font:400 .84rem var(--font-signal);color:var(--poussiere)}
 .lecteur-options label{display:inline-flex;align-items:center;gap:.5rem}
-.lecteur-options select{
-  max-width:min(300px, 60vw);font:400 .84rem var(--font-signal);color:var(--os);
-  background:var(--suie);border:1px solid var(--trait);border-radius:4px;padding:.32rem .5rem;
-}
 .lecteur-options input{accent-color:var(--braise);width:15px;height:15px;margin:0}
+.lecteur-temps{font-weight:600;color:var(--os);font-variant-numeric:tabular-nums}
 .lecteur-barre{grid-column:1 / -1;height:3px;border-radius:2px;background:rgba(236,227,215,.12);overflow:hidden}
 .lecteur-barre span{display:block;height:100%;width:var(--lp,0%);background:linear-gradient(90deg,var(--braise),var(--flamme));transition:width .4s}
 .lecteur-message{grid-column:1 / -1;margin:0;font:400 .88rem/1.45 var(--font-signal);color:var(--flamme)}
@@ -1112,6 +1109,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
 </footer>
 
 <!-- ================= LECTEUR DU NARRATEUR ================= -->
+<audio id="narration" preload="none" src="narration.mp3"></audio>
 <div class="lecteur" id="lecteur" role="region" aria-label="Narration du récit" hidden>
   <div class="lecteur-info">
     <svg aria-hidden="true"><use href="#logo"/></svg>
@@ -1127,7 +1125,7 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
     <button type="button" id="l-stop" aria-label="Arrêter la narration"><svg aria-hidden="true"><use href="#i-stop"/></svg></button>
   </div>
   <div class="lecteur-options">
-    <label for="l-voix">Voix du narrateur <select id="l-voix"></select></label>
+    <span class="lecteur-temps" id="l-temps">0:00 sur 5:40</span>
     <label for="l-suivre"><input type="checkbox" id="l-suivre" checked> Suivre le texte</label>
   </div>
   <div class="lecteur-barre" aria-hidden="true"><span id="l-barre"></span></div>
@@ -1264,20 +1262,19 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
   }
 
   /* =========================================================
-     Narrateur : synthèse vocale du navigateur, phrase par phrase
+     Narrateur : voix off enregistrée (narration.mp3), surlignage phrase par phrase
      ========================================================= */
-  var synth = window.speechSynthesis;
-  var Enonce = window.SpeechSynthesisUtterance;
-  var supporte = !!(synth && Enonce);
+  var audio = document.getElementById("narration");
+  var TEMPS = [[0.35, 2.81], [3.56, 5.71], [6.01, 8.18], [9.53, 10.62], [11.37, 18.24], [18.54, 26.44], [27.04, 31.74], [32.04, 36.34], [36.94, 41.44], [41.74, 46.45], [46.75, 50.14], [51.49, 53.47], [54.22, 59.94], [60.24, 68.46], [68.76, 73.66], [75.01, 77.39], [78.14, 82.02], [82.32, 86.33], [86.63, 90.02], [90.62, 96.59], [97.19, 101.04], [102.39, 104.55], [105.3, 110.22], [110.52, 115.18], [115.78, 118.52], [119.12, 125.07], [125.37, 131.13], [131.73, 134.78], [136.13, 138.25], [139.0, 145.4], [145.7, 151.16], [151.46, 153.13], [153.43, 157.81], [159.16, 161.71], [162.46, 165.88], [166.18, 175.03], [175.33, 179.71], [181.06, 183.76], [184.51, 190.73], [191.03, 198.42], [198.72, 202.34], [202.94, 209.88], [211.23, 213.34], [214.09, 215.69], [216.44, 221.47], [221.77, 224.59], [224.89, 229.71], [230.01, 234.37], [235.12, 236.8], [237.55, 240.33], [240.63, 243.4], [243.7, 253.8], [254.1, 262.36], [262.96, 267.34], [267.64, 273.65], [273.95, 276.94], [277.69, 278.67], [279.42, 281.82], [282.12, 286.92], [287.22, 290.81], [292.16, 293.56], [294.31, 316.15], [317.5, 318.23], [318.98, 322.03], [322.33, 325.03], [325.33, 327.73], [328.03, 333.16], [333.46, 339.0]];
 
   var lecteur = document.getElementById("lecteur");
   var lAnnee = document.getElementById("l-annee");
   var lSection = document.getElementById("l-section");
   var lLecture = document.getElementById("l-lecture");
   var lIcone = document.getElementById("l-icone");
-  var lVoix = document.getElementById("l-voix");
   var lSuivre = document.getElementById("l-suivre");
   var lBarre = document.getElementById("l-barre");
+  var lTemps = document.getElementById("l-temps");
   var lMessage = document.getElementById("l-message");
   var boutonEcoute = document.getElementById("ecoute");
   var texteEcoute = document.getElementById("ecoute-texte");
@@ -1290,18 +1287,17 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
     return out.filter(Boolean);
   }
 
-  /* Construit la file de lecture à partir des éléments [data-lire] */
+  /* File de lecture : une entrée par phrase, dans l'ordre de la voix off */
   var file = [];
   [].slice.call(document.querySelectorAll("[data-lire]")).forEach(function(el){
-    var temoin = !!el.closest("[data-voix='temoin']");
     var sec = el.closest("[data-section]");
-    var info = { voix: temoin ? "temoin" : "narrateur", section: sec ? sec.dataset.section : "", annee: sec ? (sec.dataset.annee || "") : "", racine: sec };
+    var info = { section: sec ? sec.dataset.section : "", annee: sec ? (sec.dataset.annee || "") : "", racine: sec };
     var texte = el.textContent.replace(/\s+/g, " ").trim();
     var sansEnfants = el.children.length === 0;
     if (el.dataset.dire) {
       var span = null;
       if (sansEnfants) { span = document.createElement("span"); span.className = "phrase"; span.textContent = el.textContent; el.textContent = ""; el.appendChild(span); }
-      file.push(Object.assign({ el: el, span: span, texte: el.dataset.dire }, info));
+      file.push(Object.assign({ el: el, span: span }, info));
       return;
     }
     if (sansEnfants) {
@@ -1311,65 +1307,18 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
         var s = document.createElement("span"); s.className = "phrase"; s.textContent = p;
         el.appendChild(s);
         if (i < phrases.length - 1) el.appendChild(document.createTextNode(" "));
-        file.push(Object.assign({ el: el, span: s, texte: p }, info));
+        file.push(Object.assign({ el: el, span: s }, info));
       });
     } else {
-      file.push(Object.assign({ el: el, span: null, texte: texte }, info));
+      file.push(Object.assign({ el: el, span: null }, info));
     }
   });
+  var DUREE = TEMPS.length ? TEMPS[TEMPS.length - 1][1] + .8 : 0;
+  var synchroOk = file.length === TEMPS.length;
 
-  /* Prononciation : sigles, dates, guillemets */
-  function prononcer(t){
-    return t.replace(/[«»"]/g, "")
-      .replace(/(\d{4})\s*[–-]\s*(\d{4})/g, "$1 à $2")
-      .replace(/\s*\(SASP\)/g, "")
-      .replace(/\bSASP\b/g, "S.A.S.P.")
-      .replace(/\bUS Marshals\b/g, "U.S. Marshals")
-      .replace(/ /g, " ").replace(/\s+/g, " ").trim();
-  }
+  var idx = 0, etat = "arret", raf = 0, cible = null, precedent = null;
 
-  var idx = 0, etat = "arret", generation = 0, minuterie = 0;
-  var voixNarr = null, voixTemoin = null, toutesVoix = [];
-  var precedent = null;
-
-  function score(v){
-    var n = v.name || "", s = 0;
-    if (/^fr[-_]FR/i.test(v.lang)) s += 6; else if (/^fr/i.test(v.lang)) s += 3;
-    if (/Natural|Naturel|Neural|Online/i.test(n)) s += 20;
-    if (/Google/i.test(n)) s += 8;
-    if (/Henri|R[ée]my|Thomas|Paul|Antoine|Jean|Daniel|Fabrice|Male|Homme/i.test(n)) s += 5;
-    return s;
-  }
-  function choisirTemoin(){
-    var autres = toutesVoix.filter(function(v){ return v !== voixNarr; });
-    voixTemoin = autres.length ? autres[0] : voixNarr;
-  }
-  function chargerVoix(){
-    if (!supporte) return;
-    var liste = synth.getVoices().filter(function(v){ return /^fr/i.test(v.lang); });
-    if (!liste.length) return;
-    liste.sort(function(a, b){ return score(b) - score(a); });
-    toutesVoix = liste;
-    var memo = null;
-    try { memo = localStorage.getItem("phoenix-voix"); } catch (e) {}
-    var actuel = voixNarr ? voixNarr.name : memo;
-    lVoix.innerHTML = "";
-    liste.forEach(function(v){
-      var o = document.createElement("option");
-      o.value = v.name; o.textContent = v.name.replace(/^Microsoft\s+/, "").replace(/\s*-\s*French.*$/i, "") + " (" + v.lang + ")";
-      lVoix.appendChild(o);
-    });
-    voixNarr = liste.filter(function(v){ return v.name === actuel; })[0] || liste[0];
-    lVoix.value = voixNarr.name;
-    choisirTemoin();
-  }
-  if (supporte) {
-    chargerVoix();
-    if (synth.addEventListener) synth.addEventListener("voiceschanged", chargerVoix);
-    else synth.onvoiceschanged = chargerVoix;
-    try { synth.cancel(); } catch (e) {}
-  }
-
+  function mmss(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
   function message(t){ lMessage.textContent = t || ""; lMessage.hidden = !t; }
   function majBoutons(){
     var lit = etat === "lecture";
@@ -1383,7 +1332,8 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
     precedent = null;
   }
   function marquer(item){
-    if (precedent && precedent.el !== item.el) { precedent.el.classList.remove("en-lecture","bloc-actif"); }
+    if (!item || item === precedent) return;
+    if (precedent && precedent.el !== item.el) precedent.el.classList.remove("en-lecture","bloc-actif");
     if (precedent && precedent.span) precedent.span.classList.remove("phrase-active");
     item.el.classList.add("en-lecture");
     if (item.span) item.span.classList.add("phrase-active"); else item.el.classList.add("bloc-actif");
@@ -1391,74 +1341,61 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
       try { item.el.scrollIntoView({ block: "center", behavior: reduit ? "auto" : "smooth" }); } catch (e) { item.el.scrollIntoView(); }
     }
     lAnnee.textContent = item.annee; lSection.textContent = item.section;
-    lBarre.style.setProperty("--lp", ((idx + 1) / file.length * 100).toFixed(1) + "%");
     precedent = item;
   }
-  function pauseApres(item, suivant){
-    if (!suivant) return 0;
-    if (suivant.el === item.el) return 140;
-    if (suivant.racine !== item.racine) return 1100;
-    if (/^H[1-4]$/.test(suivant.el.tagName) || /^H[1-4]$/.test(item.el.tagName)) return 700;
-    return 450;
+  function indexA(t){
+    var k = 0;
+    for (var i = 0; i < TEMPS.length; i++) { if (TEMPS[i][0] - .12 <= t) k = i; else break; }
+    return k;
   }
-  function lire(i){
-    clearTimeout(minuterie);
-    if (i >= file.length) { terminer(); return; }
-    idx = i;
-    var item = file[i];
-    marquer(item);
-    var u = new Enonce(prononcer(item.texte));
-    u.lang = "fr-FR";
-    var temoin = item.voix === "temoin";
-    var v = temoin ? voixTemoin : voixNarr;
-    if (v) u.voice = v;
-    u.rate = temoin ? .94 : .96;
-    u.pitch = temoin ? (voixTemoin === voixNarr ? 1.15 : 1) : .95;
-    var jeton = ++generation;
-    u.onend = function(){
-      if (jeton !== generation || etat !== "lecture") return;
-      minuterie = setTimeout(function(){ if (jeton === generation && etat === "lecture") lire(idx + 1); }, pauseApres(item, file[idx + 1]));
-    };
-    u.onerror = function(e){
-      if (jeton !== generation) return;
-      if (e && (e.error === "interrupted" || e.error === "canceled")) return;
-      etat = "pause"; majBoutons();
-      message("La voix n’a pas pu lire ce passage. Essayez une autre voix dans la liste, puis relancez la lecture.");
-    };
-    try { synth.speak(u); } catch (err) { u.onerror({ error: "synthesis-failed" }); }
+  function majTemps(t){
+    lTemps.textContent = mmss(t) + " sur " + mmss(DUREE);
+    lBarre.style.setProperty("--lp", Math.min(100, t / DUREE * 100).toFixed(2) + "%");
   }
-  function demarrer(depuis){
+  function suivi(){
+    var t = audio.currentTime || 0;
+    if (cible !== null && Math.abs(t - cible) < 1.5) cible = null;
+    if (cible === null) {
+      var k = indexA(t);
+      if (k !== idx || !precedent) { idx = k; marquer(file[k]); }
+      majTemps(t);
+    }
+    if (etat === "lecture") raf = requestAnimationFrame(suivi);
+  }
+  function placer(i){
+    cible = Math.max(0, TEMPS[i][0] - .08);
+    try {
+      if (audio.readyState >= 1) audio.currentTime = cible;
+      else audio.addEventListener("loadedmetadata", function(){ try { audio.currentTime = cible === null ? audio.currentTime : cible; } catch (e) {} }, { once: true });
+    } catch (e) {}
+  }
+  function jouer(i){
     lecteur.hidden = false;
     document.body.classList.add("narration");
-    if (!supporte) { message("La narration vocale n’est pas disponible dans ce navigateur. Essayez Chrome, Edge ou Safari."); return; }
-    if (!toutesVoix.length) chargerVoix();
-    if (!toutesVoix.length && synth.getVoices().length) { message("Aucune voix française n’est installée sur cet appareil. La lecture utilisera la voix par défaut."); }
-    else message("");
-    generation++; clearTimeout(minuterie);
-    try { synth.cancel(); } catch (e) {}
+    if (!synchroOk) { message("La narration ne correspond plus au texte de la page. Il faut réenregistrer les phrases modifiées."); return; }
+    message("");
+    idx = i; nettoyer(); marquer(file[i]); majTemps(TEMPS[i][0]);
+    placer(i);
     etat = "lecture"; majBoutons();
-    lire(depuis || 0);
+    var p = audio.play();
+    if (p && p.catch) p.catch(function(err){
+      if (err && err.name === "AbortError") return;
+      etat = "pause"; majBoutons();
+      message("La lecture n’a pas pu démarrer. Appuyez de nouveau sur lecture.");
+    });
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(suivi);
   }
-  function pause(){
-    etat = "pause"; generation++; clearTimeout(minuterie);
-    try { synth.cancel(); } catch (e) {}
-    majBoutons();
-  }
+  function pause(){ etat = "pause"; audio.pause(); cancelAnimationFrame(raf); majBoutons(); }
   function reprendre(){
     etat = "lecture"; majBoutons(); message("");
-    lire(idx);
+    var p = audio.play(); if (p && p.catch) p.catch(function(){ etat = "pause"; majBoutons(); });
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(suivi);
   }
   function arreter(){
-    etat = "arret"; generation++; clearTimeout(minuterie);
-    try { synth.cancel(); } catch (e) {}
+    etat = "arret"; audio.pause(); cancelAnimationFrame(raf); cible = null;
     nettoyer(); message("");
     document.body.classList.remove("narration");
     lecteur.hidden = true; majBoutons();
-  }
-  function terminer(){
-    etat = "fin"; generation++;
-    majBoutons();
-    message("Fin du récit officiel.");
   }
   function debutSection(i){
     var r = file[i] && file[i].racine, k = i;
@@ -1467,49 +1404,52 @@ body.narration [data-lire]:not(.en-lecture){opacity:.5;transition:opacity .4s}
   }
   function sauter(sens){
     if (!file.length) return;
-    var debut = debutSection(idx), cible;
+    var debut = debutSection(idx), dest;
     if (sens < 0) {
-      cible = (idx - debut > 1) ? debut : (debut > 0 ? debutSection(debut - 1) : 0);
+      dest = (idx - debut > 1) ? debut : (debut > 0 ? debutSection(debut - 1) : 0);
     } else {
-      cible = idx; while (cible < file.length && file[cible].racine === file[idx].racine) cible++;
-      if (cible >= file.length) { terminer(); return; }
+      dest = idx; while (dest < file.length && file[dest].racine === file[idx].racine) dest++;
+      if (dest >= file.length) return;
     }
-    nettoyer();
-    if (etat === "lecture") { generation++; try { synth.cancel(); } catch (e) {} lire(cible); }
-    else { idx = cible; marquer(file[cible]); }
+    if (etat === "lecture") jouer(dest);
+    else { idx = dest; nettoyer(); marquer(file[dest]); majTemps(TEMPS[dest][0]); placer(dest); if (etat === "fin") etat = "pause"; majBoutons(); }
   }
   function indexDepuis(id){
-    var cible = document.getElementById(id);
-    if (!cible) return 0;
-    for (var i = 0; i < file.length; i++) if (cible.contains(file[i].el)) return i;
+    var c = document.getElementById(id);
+    if (!c) return 0;
+    for (var i = 0; i < file.length; i++) if (c.contains(file[i].el)) return i;
     return 0;
   }
+
+  audio.addEventListener("ended", function(){
+    etat = "fin"; cancelAnimationFrame(raf); majBoutons(); majTemps(DUREE);
+    message("Fin du récit officiel.");
+  });
+  audio.addEventListener("waiting", function(){ if (etat === "lecture") message("Chargement de la narration…"); });
+  audio.addEventListener("playing", function(){ if (lMessage.textContent.indexOf("Chargement") === 0) message(""); });
+  audio.addEventListener("error", function(){
+    etat = "pause"; majBoutons();
+    message("Le fichier de narration est introuvable. Placez narration.mp3 dans le même dossier que index.html.");
+  });
 
   boutonEcoute.addEventListener("click", function(){
     if (etat === "lecture") pause();
     else if (etat === "pause") reprendre();
-    else demarrer(0);
+    else jouer(0);
   });
   [].slice.call(document.querySelectorAll("[data-ecouter-depuis]")).forEach(function(b){
-    b.addEventListener("click", function(){ nettoyer(); demarrer(indexDepuis(b.dataset.ecouterDepuis)); });
+    b.addEventListener("click", function(){ jouer(indexDepuis(b.dataset.ecouterDepuis)); });
   });
   lLecture.addEventListener("click", function(){
     if (etat === "lecture") pause();
-    else if (etat === "fin") { nettoyer(); demarrer(0); }
+    else if (etat === "fin") jouer(0);
     else reprendre();
   });
   document.getElementById("l-prec").addEventListener("click", function(){ sauter(-1); });
   document.getElementById("l-suiv").addEventListener("click", function(){ sauter(1); });
   document.getElementById("l-stop").addEventListener("click", arreter);
-  lVoix.addEventListener("change", function(){
-    var v = toutesVoix.filter(function(x){ return x.name === lVoix.value; })[0];
-    if (!v) return;
-    voixNarr = v; choisirTemoin();
-    try { localStorage.setItem("phoenix-voix", v.name); } catch (e) {}
-    if (etat === "lecture") { generation++; try { synth.cancel(); } catch (e) {} lire(idx); }
-  });
-  window.addEventListener("pagehide", function(){ if (supporte) try { synth.cancel(); } catch (e) {} });
   document.addEventListener("keydown", function(e){ if (e.key === "Escape" && etat !== "arret") arreter(); });
+  majTemps(0);
   majBoutons();
 })();
 </script>
